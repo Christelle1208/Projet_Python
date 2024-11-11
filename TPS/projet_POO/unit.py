@@ -44,7 +44,7 @@ class Unit:
         Dessine l'unité sur la grille.
     """
 
-    def __init__(self, x, y, health, attack_power, team):
+    def __init__(self, x, y, health, attack_power, team, type_perso):
         """
         Construit une unité avec une position, une santé, une puissance d'attaque et une équipe.
 
@@ -67,6 +67,7 @@ class Unit:
         self.attack_power = attack_power
         self.team = team  # 'player' ou 'enemy'
         self.is_selected = False
+        self.type_perso = type_perso
 
     def move(self, dx, dy):
         """Déplace l'unité de dx, dy."""
@@ -80,10 +81,35 @@ class Unit:
             target.health -= self.attack_power
 
     def draw(self, screen):
-        """Affiche l'unité sur l'écran."""
-        color = BLUE if self.team == 'player' else RED
+        # Choix des couleurs en fonction du type de l'unité
+        match self.type_perso:
+            case 'Tank':
+                color = (0, 100, 200)  # Bleu foncé
+            case 'Assassin':
+                color = (255,0,0)  # Rouge
+            case 'Mage':
+                color = (225, 105, 160)  # Rose
+            case 'Archer_poison':
+                color = (135, 50, 215)  # Violet
+            case 'Archer_electricite':
+                color = (255, 255, 0)  # Jaune
+            case _:
+                color = (150, 150, 150)  # Gris pour les types inconnus
+
+        # Encadrer l'unité sélectionnée
         if self.is_selected:
-            pygame.draw.rect(screen, GREEN, (self.x * CELL_SIZE,
-                             self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
-        pygame.draw.circle(screen, color, (self.x * CELL_SIZE + CELL_SIZE //
-                           2, self.y * CELL_SIZE + CELL_SIZE // 2), CELL_SIZE // 3)
+            pygame.draw.rect(screen, GREEN, (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+
+        # Dessiner la forme selon l'équipe
+        center_x, center_y = self.x * CELL_SIZE + CELL_SIZE // 2, self.y * CELL_SIZE + CELL_SIZE // 2
+        if self.team == 'player':
+            # Joueur : Cercle
+            pygame.draw.circle(screen, color, (center_x, center_y), CELL_SIZE // 3)
+        else:
+            # Ennemi : Triangle
+            points = [
+                (center_x, center_y - CELL_SIZE // 3),  # Sommet du triangle
+                (center_x - CELL_SIZE // 3, center_y + CELL_SIZE // 3),  # Bas gauche
+                (center_x + CELL_SIZE // 3, center_y + CELL_SIZE // 3)   # Bas droite
+            ]
+            pygame.draw.polygon(screen, color, points)
