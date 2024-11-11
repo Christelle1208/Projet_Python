@@ -1,7 +1,8 @@
 import pygame
 import random
 
-from unit import *
+from unit_copy import *
+from characters import *
 
 
 class Game:
@@ -28,12 +29,26 @@ class Game:
         screen : pygame.Surface
             La surface de la fenêtre du jeu.
         """
+        x,y=random.randint(0,7),random.randint(0,7)
         self.screen = screen
-        self.player_units = [Unit(0, 0, 10, 2, 'player'),
-                             Unit(1, 0, 10, 2, 'player')]
-
-        self.enemy_units = [Unit(6, 6, 8, 1, 'enemy'),
-                            Unit(7, 6, 8, 1, 'enemy')]
+        types_dispo = ["Tank", "Assassin", "Mage", "Archer_poison", "Archer_electricite"]
+        print("Types : Tank, Assassin, Mage, Archer_poison, Archer_electricite")
+        type_joueur,team=["","",""],'player'
+        for i in range(3):
+            type_joueur[i]=str(input(f"Choisissez un type de personnage pour l'unité {i}: "))
+        self.player_units = [Personnage(type_joueur[0],team,x,y).character(),
+                             Personnage(type_joueur[1],team,x-1,y).character(),
+                             Personnage(type_joueur[2],team,x,y-1).character()]
+        
+        x,y=random.randint(1,7),random.randint(1,7)
+        type_ennemi,team=["","",""],'enemy'
+        print("L'ennemi a choisi :")
+        for i in range(3):
+            type_ennemi[i] = random.choice(types_dispo)
+            print(type_ennemi[i])
+        self.enemy_units = [Personnage(type_ennemi[0],team,x,y).character(),
+                            Personnage(type_ennemi[1],team,x-1,y).character(),
+                            Personnage(type_ennemi[2],team,x,y-1).character()]
 
     def handle_player_turn(self):
         """Tour du joueur"""
