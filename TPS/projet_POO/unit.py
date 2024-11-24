@@ -44,7 +44,7 @@ class Unit:
         Dessine l'unité sur la grille.
     """
 
-    def __init__(self, x, y, health, attack_power, team, type_perso):
+    def __init__(self, x, y, health, attack_power, team, type_perso, move_range):
         """
         Construit une unité avec une position, une santé, une puissance d'attaque et une équipe.
 
@@ -68,6 +68,8 @@ class Unit:
         self.team = team  # 'player' ou 'enemy'
         self.is_selected = False
         self.type_perso = type_perso
+        self.accessible_tiles=[]
+        self.move_range=move_range
 
     def move(self, dx, dy):
         """Déplace l'unité de dx, dy."""
@@ -79,6 +81,29 @@ class Unit:
         """Attaque une unité cible."""
         if abs(self.x - target.x) <= 1 and abs(self.y - target.y) <= 1:
             target.health -= self.attack_power
+
+    def get_accessible_tiles(self, move_range):
+        """Calcule les cases accessibles à partir de la position actuelle.
+
+        Paramètres
+        ----------
+        move_range : int
+            La distance maximale de déplacement.
+
+        Retourne
+        --------
+        list[tuple[int, int]]
+            Une liste de coordonnées (x, y) des cases accessibles.
+        """
+        tiles = []
+        for dx in range(-move_range, move_range + 1):
+            for dy in range(-move_range, move_range + 1):
+                if abs(dx) + abs(dy) <= move_range:  # Vérifier les déplacements séparément en x et en y
+                    new_x, new_y = self.x + dx, self.y + dy
+                    if 0 <= new_x < GRID_SIZE and 0 <= new_y < GRID_SIZE:  # Vérifier les limites de la grille
+                        tiles.append((new_x, new_y))
+        return tiles
+
 
     def draw(self, screen):
         # Choix des couleurs en fonction du type de l'unité

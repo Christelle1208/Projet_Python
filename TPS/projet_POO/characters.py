@@ -31,24 +31,24 @@ class Personnage:
         Retourne une unité correspondant au personnage.
     """
 
-    def __init__(self,type_perso,team,x,y):
+    def __init__(self,type_perso,team,pos):
         self.type_perso=type_perso
         self.team=team
-        self.x=x
-        self.y=y
+        self.x=pos[0]
+        self.y=pos[1]
     
     def character(self):
         match(self.type_perso):
             case("Tank"):
-                return Unit(self.x, self.y, 70, 5, self.team, type_perso="Tank")
+                return Unit(self.x, self.y, 70, 5, self.team, type_perso="Tank", move_range=1)
             case("Assassin"):
-                return Unit(self.x, self.y, 40, 15, self.team, type_perso="Assassin")
+                return Unit(self.x, self.y, 40, 15, self.team, type_perso="Assassin", move_range=4)
             case("Mage"):
-                return Unit(self.x, self.y, 35, 10, self.team, type_perso="Mage")
+                return Unit(self.x, self.y, 35, 10, self.team, type_perso="Mage", move_range=2)
             case("Archer_poison"):
-                return Unit(self.x, self.y, 30, 7, self.team, type_perso="Archer_poison")
+                return Unit(self.x, self.y, 30, 7, self.team, type_perso="Archer_poison", move_range=3)
             case("Archer_electricite"):
-                return Unit(self.x, self.y, 30, 7, self.team, type_perso="Archer_electricite")
+                return Unit(self.x, self.y, 30, 7, self.team, type_perso="Archer_electricite", move_range=3)
             case _:
                 print("Type de personnage inconnu")
                 return None
