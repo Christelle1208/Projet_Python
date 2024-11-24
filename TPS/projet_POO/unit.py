@@ -1,50 +1,8 @@
 import pygame
-import random
-
-# Constantes
-GRID_SIZE = 8
-CELL_SIZE = 60
-WIDTH = GRID_SIZE * CELL_SIZE
-HEIGHT = GRID_SIZE * CELL_SIZE
-FPS = 30
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
-
+from config import CELL_SIZE, BLUE, RED, PLAYER1_COLORS, PLAYER2_COLORS
 
 class Unit:
-    """
-    Classe pour représenter une unité.
-
-    ...
-    Attributs
-    ---------
-    x : int
-        La position x de l'unité sur la grille.
-    y : int
-        La position y de l'unité sur la grille.
-    health : int
-        La santé de l'unité.
-    attack_power : int
-        La puissance d'attaque de l'unité.
-    team : str
-        L'équipe de l'unité ('player' ou 'enemy').
-    is_selected : bool
-        Si l'unité est sélectionnée ou non.
-
-    Méthodes
-    --------
-    move(dx, dy)
-        Déplace l'unité de dx, dy.
-    attack(target)
-        Attaque une unité cible.
-    draw(screen)
-        Dessine l'unité sur la grille.
-    """
-
-     def __init__(self, name, hp, attack, defense, speed, range):
+    def __init__(self, name, hp, attack, defense, speed, range):
         self.name = name
         self.hp = hp
         self.attack = attack
@@ -57,47 +15,69 @@ class Unit:
         self.team = None
         self.color = None
 
-    def move(self, dx, dy):
-        """Déplace l'unité de dx, dy."""
-        if 0 <= self.x + dx < GRID_SIZE and 0 <= self.y + dy < GRID_SIZE:
-            self.x += dx
-            self.y += dy
+    def take_damage(self, amount, ignore_defense=False):
+        if ignore_defense:
+            self.hp -= amount
+        else:
+            damage_taken = max(0, amount - self.defense)
+            self.hp -= damage_taken
+        print(f"{self.name} takes {amount} damage! HP left: {self.hp}")
 
-    def attack(self, target):
-        """Attaque une unité cible."""
-        if abs(self.x - target.x) <= 1 and abs(self.y - target.y) <= 1:
-            target.health -= self.attack_power
+    def can_move_to(self, x, y):
+        """Check if the target position (x, y) is within the unit's movement range."""
+        return abs(self.x - x) <= self.range and abs(self.y - y) <= self.range
+
+    def attack_enemy(self, target):
+        print(f"{self.name} attacks {target.name} with power {self.attack}.")
+        target.take_damage(self.attack)
 
     def draw(self, screen):
-        # Choix des couleurs en fonction du type de l'unité
-        match self.type_perso:
-            case 'Tank':
-                color = (0, 100, 200)  # Bleu foncé
-            case 'Assassin':
-                color = (255,0,0)  # Rouge
-            case 'Mage':
-                color = (225, 105, 160)  # Rose
-            case 'Archer_poison':
-                color = (135, 50, 215)  # Violet
-            case 'Archer_electricite':
-                color = (255, 255, 0)  # Jaune
-            case _:
-                color = (150, 150, 150)  # Gris pour les types inconnus
+        """Draw the unit on the screen."""
+        border_color = BLUE if self.team == "player1" else RED
+        pygame.draw.rect(
+            screen, 
+            border_color, 
+            (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE), 
+            2
+        )
+        pygame.draw.circle(
+            screen, 
+            self.color, 
+            (self.x * CELL_SIZE + CELL_SIZE // 2, self.y * CELL_SIZE + CELL_SIZE // 2), 
+            CELL_SIZE // 3
+        )
 
-        # Encadrer l'unité sélectionnée
-        if self.is_selected:
-            pygame.draw.rect(screen, GREEN, (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+class Tank(Unit):
+    def __init__(self):
+        super().__init__("Tank", hp=100, attack=20, defense=10, speed=2, range=1)
 
-        # Dessiner la forme selon l'équipe
-        center_x, center_y = self.x * CELL_SIZE + CELL_SIZE // 2, self.y * CELL_SIZE + CELL_SIZE // 2
-        if self.team == 'player':
-            # Joueur : Cercle
-            pygame.draw.circle(screen, color, (center_x, center_y), CELL_SIZE // 3)
-        else:
-            # Ennemi : Triangle
-            points = [
-                (center_x, center_y - CELL_SIZE // 3),  # Sommet du triangle
-                (center_x - CELL_SIZE // 3, center_y + CELL_SIZE // 3),  # Bas gauche
-                (center_x + CELL_SIZE // 3, center_y + CELL_SIZE // 3)   # Bas droite
-            ]
-            pygame.draw.polygon(screen, color, points)
+    def attack_enemy(self, target):
+        print(f"{self.name} (Tank) performs a heavy strike on {target.name}.")
+        super().attack_enemy(target)
+
+class Assassin(Unit):
+    def __init__(self):
+        super().__init__("Assassin", hp=70, attack=40, defense=5, speed=4, range=1)
+
+    def attack_enemy(self, target):
+        print(f"{self.name} (Assassin) strikes swiftly at {target.name}.")
+        super().attack_enemy(target)
+
+class Marksman(Unit):
+    def __init__(self):
+        super().__init__("Marksman", hp=75, attack=35, defense=6, speed=3, range=3)
+
+    def attack_enemy(self, target):
+        print(f"{self.name} (Marksman) shoots at {target.name} from afar.")
+        super().attack_enemy(target)
+
+class Mage(Unit):
+    def __init__(self):
+        super().__init__("Mage", hp=60, attack=30, defense=3, speed=3, range=2)
+
+    def attack_enemy(self, target):
+        print(f"{self.name} (Mage) casts a magical spell on {target.name}.")
+        target.take_damage(self.attack, ignore_defense=True)  
+
+    def move(self):
+        print(f"{self.name} (Mage) moves and can walk on water.")
