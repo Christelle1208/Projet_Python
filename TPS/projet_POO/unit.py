@@ -44,30 +44,18 @@ class Unit:
         Dessine l'unité sur la grille.
     """
 
-    def __init__(self, x, y, health, attack_power, team, type_perso):
-        """
-        Construit une unité avec une position, une santé, une puissance d'attaque et une équipe.
-
-        Paramètres
-        ----------
-        x : int
-            La position x de l'unité sur la grille.
-        y : int
-            La position y de l'unité sur la grille.
-        health : int
-            La santé de l'unité.
-        attack_power : int
-            La puissance d'attaque de l'unité.
-        team : str
-            L'équipe de l'unité ('player' ou 'enemy').
-        """
-        self.x = x
-        self.y = y
-        self.health = health
-        self.attack_power = attack_power
-        self.team = team  # 'player' ou 'enemy'
-        self.is_selected = False
-        self.type_perso = type_perso
+     def __init__(self, name, hp, attack, defense, speed, range):
+        self.name = name
+        self.hp = hp
+        self.attack = attack
+        self.defense = defense
+        self.speed = speed
+        self.range = range
+        self.has_acted = False
+        self.x = 0
+        self.y = 0
+        self.team = None
+        self.color = None
 
     def move(self, dx, dy):
         """Déplace l'unité de dx, dy."""
