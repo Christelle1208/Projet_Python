@@ -50,7 +50,7 @@ class Personnage:
             case _:
                 print("Type de personnage inconnu : par défaut, le personnage sera un Tank")
                 return Unit("Tank",self.x,self.y, 70, 5, 10, self.team, range=1) 
-___________ a modifier __________________
+
 
 class Unit:
     def __init__(self, name, hp, attack, defense, speed, range):
@@ -133,5 +133,5 @@ class Mage(Unit):
     def move(self):
         print(f"{self.name} (Mage) moves and can walk on water.")
 
-héritage entre les characteres, et ajout des caractéristiques des characteres  ( déplacements, prend des dégats, déplacements...)
+
 
