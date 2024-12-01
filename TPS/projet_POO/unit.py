@@ -1,69 +1,20 @@
 import pygame
-import random
-
-# Constantes
-GRID_SIZE = 8
-CELL_SIZE = 60
-WIDTH = GRID_SIZE * CELL_SIZE
-HEIGHT = GRID_SIZE * CELL_SIZE
-FPS = 30
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
-
+from config import CELL_SIZE
 
 class Unit:
-    """
-    Classe pour représenter une unité.
-
-    ...
-    Attributs
-    ---------
-    x : int
-        La position x de l'unité sur la grille.
-    y : int
-        La position y de l'unité sur la grille.
-    health : int
-        La santé de l'unité.
-    attack_power : int
-        La puissance d'attaque de l'unité.
-    team : str
-        L'équipe de l'unité ('player' ou 'enemy').
-    is_selected : bool
-        Si l'unité est sélectionnée ou non.
-
-    Méthodes
-    --------
-    move(dx, dy)
-        Déplace l'unité de dx, dy.
-    attack(target)
-        Attaque une unité cible.
-    draw(screen)
-        Dessine l'unité sur la grille.
-    """
-
-    def __init__(self, name,x, y, hp, attack, defense, team,range):
+    def __init__(self, name, hp, attack, defense, range, image_path):
         self.name = name
         self.hp = hp
         self.attack = attack
         self.defense = defense
         self.range = range
         self.has_acted = False
-        self.x = x
-        self.y = y
-        self.team = team
-        self.color = None
-        self.accessible_tiles=[]
-        self.move_range=range
-        self.is_selected=False
-
-    # def move(self, dx, dy):
-    #     """Déplace l'unité de dx, dy."""
-    #     if 0 <= self.x + dx < GRID_SIZE and 0 <= self.y + dy < GRID_SIZE:
-    #         self.x += dx
-    #         self.y += dy
+        self.x = 0
+        self.y = 0
+        self.team = None
+        self.image = pygame.image.load(image_path)
+        self.image = pygame.transform.scale(self.image, (CELL_SIZE, CELL_SIZE))  # Scale image to fit the tile
+        self.is_visible = True  # all units start visible
 
     def attack(self, target):
         """Attaque une unité cible."""

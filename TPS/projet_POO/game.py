@@ -1,24 +1,32 @@
 import pygame
-import random
-
-from unit import *
-from characters import *
-
+import json
+from tiles import Tile
+from unit import Tank, Assassin, Marksman, Mage
+from config import DEFAULT_CELL_SIZE, PLAYER1_IMAGES, PLAYER2_IMAGES
 
 class Game:
-    """
-    Classe pour représenter le jeu.
+    def __init__(self, screen):
+        self.screen = screen
+        self.hidden_lava = set()
+        self.map = []
+        self.cell_size = DEFAULT_CELL_SIZE
+        self.current_turn = "player1"
+        self.units = []
+        self.current_unit_index = 0
+        self.cursor_pos = (0, 0)
+        self.ability_mode = None  # Tracks the currently selected ability
 
-    ...
-    Attributs
-    ---------
-    screen: pygame.Surface
-        La surface de la fenêtre du jeu.
-    player_units : list[Unit]
-        La liste des unités du joueur.
-    enemy_units : list[Unit]
-        La liste des unités de l'adversaire.
-    """
+        # Load map
+        with open("assets/map1.json") as f:
+            data = json.load(f)
+            self.load_map(data)
+
+        # Initialize units
+        self.initialize_units()
+        if not self.validate_map():
+            raise ValueError("Invalid map: Fix the map and try again.")
+
+        self.start_turn()
 
     def __init__(self, screen):
         """
