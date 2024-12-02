@@ -15,6 +15,7 @@ class Unit:
         self.image = pygame.image.load(image_path)
         self.image = pygame.transform.scale(self.image, (CELL_SIZE, CELL_SIZE))  # Scale image to fit the tile
         self.is_visible = True  # all units start visible
+        
       def draw(self, screen, current_turn):
         """Draw the unit and its HP bar if visible."""
         if not self.is_visible and self.team != current_turn:
