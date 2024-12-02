@@ -15,63 +15,85 @@ class Unit:
         self.image = pygame.image.load(image_path)
         self.image = pygame.transform.scale(self.image, (CELL_SIZE, CELL_SIZE))  # Scale image to fit the tile
         self.is_visible = True  # all units start visible
+      def draw(self, screen, current_turn):
+        """Draw the unit and its HP bar if visible."""
+        if not self.is_visible and self.team != current_turn:
+            return  # Don't draw invisible units
 
-    def attack(self, target):
-        """Attaque une unité cible."""
-        if abs(self.x - target.x) <= 1 and abs(self.y - target.y) <= 1:
-            target.health -= self.attack_power
+        # Draw the character image
+        screen.blit(self.image, (self.x * CELL_SIZE, self.y * CELL_SIZE))
 
-    def get_accessible_tiles(self, move_range):
-        """Calcule les cases accessibles à partir de la position actuelle.
+        # Draw the HP bar
+        bar_width = CELL_SIZE // 2  # Half the cell width
+        bar_height = 5  # Small height for the HP bar
+        bar_x = self.x * CELL_SIZE + CELL_SIZE + 2  # Positioned to the right of the unit
+        bar_y = self.y * CELL_SIZE + (CELL_SIZE - bar_height) // 2  # Centered vertically
 
-        Paramètres
-        ----------
-        move_range : int
-            La distance maximale de déplacement.
+        # Calculate HP bar proportion
+        hp_ratio = max(0, self.hp / 100)  # Ensure the ratio is not negative
+        hp_fill_width = int(bar_width * hp_ratio)
 
-        Retourne
-        --------
-        list[tuple[int, int]]
-            Une liste de coordonnées (x, y) des cases accessibles.
-        """
-        tiles = []
-        for dx in range(-move_range, move_range + 1):
-            for dy in range(-move_range, move_range + 1):
-                if abs(dx) + abs(dy) <= move_range:  # Vérifier les déplacements séparément en x et en y
-                    new_x, new_y = self.x + dx, self.y + dy
-                    if 0 <= new_x < GRID_SIZE and 0 <= new_y < GRID_SIZE:  # Vérifier les limites de la grille
-                        tiles.append((new_x, new_y))
-        return tiles
+        # Draw the background of the HP bar
+        pygame.draw.rect(screen, (255, 0, 0), (bar_x, bar_y, bar_width, bar_height))  # Red background for missing HP
+        pygame.draw.rect(screen, (0, 255, 0), (bar_x, bar_y, hp_fill_width, bar_height))  # Green for current HP
 
 
-    def draw(self, screen):
-        # Choix des couleurs en fonction du type de l'unité
-        match self.name:
-            case 'Tank':
-                color = (0, 100, 200)  # Bleu foncé
-            case 'Assassin':
-                color = (255,0,0)  # Rouge
-            case 'Mage':
-                color = (225, 105, 160)  # Rose
-            case 'Marksman':
-                color = (255, 255, 0)  # Jaune
-            case _:
-                color = (150, 150, 150)  # Gris pour les types inconnus
-
-        # Encadrer l'unité sélectionnée
-        if self.is_selected:
-            pygame.draw.rect(screen, GREEN, (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
-
-        # Dessiner la forme selon l'équipe
-        center_x, center_y = self.x * CELL_SIZE + CELL_SIZE // 2, self.y * CELL_SIZE + CELL_SIZE // 2
-        if self.team == 'player':
-            # Joueur : Cercle
-            pygame.draw.circle(screen, color, (center_x, center_y), CELL_SIZE // 3)
+    def take_damage(self, amount, ignore_defense=False):
+        if ignore_defense:
+            self.hp -= amount
         else:
-            # Ennemi : Triangle
-            points = [
-                (center_x, center_y - CELL_SIZE // 3),  # Sommet du triangle
-                (center_x - CELL_SIZE // 3, center_y + CELL_SIZE // 3),  # Bas gauche
-                (center_x + CELL_SIZE // 3, center_y + CELL_SIZE // 3)   # Bas droite
-            ]
-            pygame.draw.polygon(screen, color, points)
+            damage_taken = max(0, amount - self.defense)
+            self.hp -= damage_taken
+        print(f"{self.name} takes {amount} damage! HP left: {self.hp}")
+
+    def can_move_to(self, x, y, map):
+        """Check if the target position (x, y) is within the unit's movement range."""
+        return (
+            (abs(self.x - x) + abs(self.y - y) <= (self.range + 1)) and
+            0 <= x < len(map[0]) and
+            0 <= y < len(map)
+        )
+
+    def attack_enemy(self, target):
+        print(f"{self.name} attacks {target.name} with power {self.attack}.")
+        target.take_damage(self.attack)
+
+
+class Tank(Unit):
+    def __init__(self, name, image_path):
+        super().__init__(name, hp=100, attack=20, defense=10, range=1, image_path=image_path)
+
+    def attack_enemy(self, target):
+        print(f"{self.name} (Tank) performs a heavy strike on {target.name}.")
+        super().attack_enemy(target)
+
+
+class Assassin(Unit):
+    def __init__(self, name, image_path):
+        super().__init__(name, hp=70, attack=40, defense=5, range=2, image_path=image_path)
+
+    def attack_enemy(self, target):
+        print(f"{self.name} (Assassin) strikes swiftly at {target.name}.")
+        super().attack_enemy(target)
+
+
+class Marksman(Unit):
+    def __init__(self, name, image_path):
+        super().__init__(name, hp=75, attack=35, defense=6, range=3, image_path=image_path)
+
+    def attack_enemy(self, target):
+        print(f"{self.name} (Marksman) shoots at {target.name} from afar.")
+        super().attack_enemy(target)
+
+
+class Mage(Unit):
+    def __init__(self, name, image_path):
+        super().__init__(name, hp=65, attack=35, defense=3, range=2, image_path=image_path)
+
+    def attack_enemy(self, target):
+        print(f"{self.name} (Mage) casts a magical spell on {target.name}.")
+        target.take_damage(self.attack, ignore_defense=True)  # Ignores defense
+
+    def move(self):
+        print(f"{self.name} (Mage) moves and can walk on water.")
+
