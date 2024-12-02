@@ -1,5 +1,5 @@
 import pygame
-from config import GRASS_IMAGE_PATH, WATER_IMAGE_PATH, LAVA_IMAGE_PATH, SOIL_IMAGE_PATH
+from config import *
 class Tile:
     def __init__(self, x, y, tile_type, cell_size, hidden_lava):
         self.x = x
