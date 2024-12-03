@@ -5,7 +5,7 @@ from unit import Tank, Assassin, Marksman, Mage
 from config import DEFAULT_CELL_SIZE, PLAYER1_IMAGES, PLAYER2_IMAGES
 from bonus import Bonus  # Importation de la classe Bonus
 
-class Game:
+class Game2:
     def __init__(self, screen):
         self.screen = screen
         self.hidden_lava = set()
@@ -28,6 +28,9 @@ class Game:
         if not self.validate_map():
             raise ValueError("Invalid map: Fix the map and try again.")
 
+        # Initialiser les bonus sur la carte
+        self.generate_bonuses()
+
         self.start_turn()
 
     def load_map(self, data):
@@ -40,29 +43,28 @@ class Game:
             self.map.append(map_row)
 
     def initialize_units(self):
-        """Initialise les unités et place les bonus aléatoirement."""
-        # Exemple de création d'unités (joueur 1 et joueur 2)
+        """Initialise les unités pour chaque joueur."""
         self.player1_units = [Tank("Tank1", PLAYER1_IMAGES["tank"]),
                               Assassin("Assassin1", PLAYER1_IMAGES["assassin"]),
                               Marksman("Marksman1", PLAYER1_IMAGES["marksman"])]
         self.player2_units = [Tank("Tank2", PLAYER2_IMAGES["tank"]),
                               Assassin("Assassin2", PLAYER2_IMAGES["assassin"]),
                               Marksman("Marksman2", PLAYER2_IMAGES["marksman"])]
-        
-        # Placer des bonus aléatoires sur la carte
-        for _ in range(3):  # Par exemple, 3 bonus aléatoires
-            bonus = Bonus.generate_random_bonus((len(self.map), len(self.map[0])), self.cell_size)
-            self.bonuses.append(bonus)
 
     def validate_map(self):
         """Vérifie si la carte est valide."""
-        # Exemple simple de validation
         return len(self.map) > 0 and len(self.map[0]) > 0
 
     def start_turn(self):
         """Initialise le début d'un tour."""
-        # Exemple de logique de début de tour
         self.current_turn = "player1"
+
+    def generate_bonuses(self):
+        """Génère et place les bonus sur la carte."""
+        # Exemple : placer 3 bonus sur la carte
+        for _ in range(3):
+            bonus = Bonus.generate_random_bonus((len(self.map), len(self.map[0])), self.cell_size)
+            self.bonuses.append(bonus)
 
     def handle_player_turn(self, player):
         """Tour du joueur."""
@@ -138,8 +140,8 @@ def main():
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption("Mon jeu de stratégie")
 
-    # Instanciation du jeu
-    game = Game(screen)
+    # Instanciation du jeu (maintenant Game2)
+    game = Game2(screen)
 
     # Boucle principale du jeu
     while True:
