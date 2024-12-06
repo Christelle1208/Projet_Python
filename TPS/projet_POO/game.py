@@ -2,10 +2,18 @@ import pygame
 import json
 from tiles import Tile
 from unit import Tank, Assassin, Marksman, Mage
+from bonus import Bonus
 from config import DEFAULT_CELL_SIZE, PLAYER1_IMAGES, PLAYER2_IMAGES
-
 class Game:
     def __init__(self, screen):
+        """
+        Construit le jeu avec la surface de la fenêtre.
+
+        Paramètres
+        ----------
+        screen : pygame.Surface
+            La surface de la fenêtre du jeu.
+        """
         self.screen = screen
         self.hidden_lava = set()
         self.map = []
@@ -28,15 +36,18 @@ class Game:
 
         self.start_turn()
 
-    def __init__(self, screen):
-        """
-        Construit le jeu avec la surface de la fenêtre.
+         # Créer une liste pour les bonus
+        self.bonuses = []
+        self.occupied_positions = set()
 
-        Paramètres
-        ----------
-        screen : pygame.Surface
-            La surface de la fenêtre du jeu.
-        """
+        # Générer des bonus sur la carte
+        for _ in range(3):  # Exemple de générer 3 bonus
+            bonus = Bonus.generate_random_bonus(map_size=(8, 8), cell_size=self.cell_size, occupied_positions=self.occupied_positions)
+            self.bonuses.append(bonus)
+            self.occupied_positions.add((bonus.x, bonus.y))
+
+        self.start_turn()
+
 
         def generate_positions(rows):
             """Génère trois positions aléatoires dans des lignes définies."""
@@ -66,7 +77,7 @@ class Game:
                             Personnage(type_ennemi[1],player2_pos[1],team).character(),
                             Personnage(type_ennemi[2],player2_pos[2],team).character()]
         
-    def handle_player_turn(self,player):
+    def handle_player_turn(self, player):
         """Tour du joueur."""
         for selected_unit in self.player_units if player == 1 else self.enemy_units:
 
@@ -86,7 +97,7 @@ class Game:
                     # Gestion des clics de souris
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         mouse_x, mouse_y = event.pos
-                        clicked_x, clicked_y = mouse_x // CELL_SIZE, mouse_y // CELL_SIZE
+                        clicked_x, clicked_y = mouse_x // self.cell_size, mouse_y // self.cell_size
 
                         # Vérifier si le clic est sur une case accessible
                         if (clicked_x, clicked_y) in selected_unit.accessible_tiles:
@@ -96,6 +107,11 @@ class Game:
                             selected_unit.accessible_tiles = []  # Effacer les cases accessibles après le déplacement
                             self.flip_display()  # Rafraîchir l'affichage
 
+                            # Vérifier si une unité a collecté un bonus
+                            for bonus in self.bonuses:
+                                if (selected_unit.x, selected_unit.y) == (bonus.x, bonus.y):
+                                    bonus.apply_bonus(selected_unit)
+                                    self.bonuses.remove(bonus)  # Retirer le bonus collecté
 
     def flip_display(self):
         """Affiche le jeu."""
@@ -109,7 +125,9 @@ class Game:
                 for tile_x, tile_y in unit.accessible_tiles:
                     rect = pygame.Rect(tile_x * CELL_SIZE, tile_y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                     pygame.draw.rect(self.screen, (50, 50, 200,128), rect)  # Bleu pour les cases accessibles
-
+        # Affiche les bonus
+        for bonus in self.bonuses:
+            bonus.draw(self.screen)
         # Affiche la grille par-dessus
         for x in range(0, WIDTH, CELL_SIZE):
             for y in range(0, HEIGHT, CELL_SIZE):
