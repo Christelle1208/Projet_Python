@@ -8,17 +8,27 @@ class Tile:
         self.cell_size = cell_size
         self.is_hidden = (x, y) in hidden_lava  # Track if the tile is hidden lava
         self.is_smoke_covered = False
+        self.smoke_duration = 0
 
-        # Load and scale images
         self.grass_image = pygame.image.load(GRASS_IMAGE_PATH)
         self.water_image = pygame.image.load(WATER_IMAGE_PATH)
         self.lava_image = pygame.image.load(LAVA_IMAGE_PATH)
         self.soil_image = pygame.image.load(SOIL_IMAGE_PATH)  # New soil image
+        self.rock1_image = pygame.image.load(ROCK1_IMAGE_PATH)
+        self.rock2_image = pygame.image.load(ROCK2_IMAGE_PATH)
+        self.rock3_image = pygame.image.load(ROCK3_IMAGE_PATH)
+        self.dead_soil_image = pygame.image.load(DEAD_SOIL)
+        self.dead_grass_image = pygame.image.load(DEAD_GRASS)
 
         self.grass_image = pygame.transform.scale(self.grass_image, (self.cell_size, self.cell_size))
         self.water_image = pygame.transform.scale(self.water_image, (self.cell_size, self.cell_size))
         self.lava_image = pygame.transform.scale(self.lava_image, (self.cell_size, self.cell_size))
         self.soil_image = pygame.transform.scale(self.soil_image, (self.cell_size, self.cell_size))  # Scale soil
+        self.rock1_image = pygame.transform.scale(self.rock1_image, (self.cell_size, self.cell_size))
+        self.rock2_image = pygame.transform.scale(self.rock2_image, (self.cell_size, self.cell_size))
+        self.rock3_image = pygame.transform.scale(self.rock3_image, (self.cell_size, self.cell_size))
+        self.dead_grass_image = pygame.transform.scale(self.dead_grass_image, (self.cell_size, self.cell_size))
+        self.dead_soil_image = pygame.transform.scale(self.dead_soil_image, (self.cell_size, self.cell_size))
 
     def reveal(self):
         """Reveal the tile by setting it as no longer hidden."""
