@@ -1,5 +1,5 @@
 import pygame, sys
-from boutons import Button
+from boutons import Bouton
 pygame.mixer.init()
 
 pygame.init()
@@ -28,7 +28,7 @@ def play():
         PLAY_RECT = PLAY_TEXT.get_rect(center=(640, 260))
         SCREEN.blit(PLAY_TEXT, PLAY_RECT)
 
-        PLAY_BACK = Button(image=None, pos=(640, 460), 
+        PLAY_BACK = Bouton(image=None, pos=(640, 460), 
                             text_input="BACK", font=get_font(75), base_color="White", hovering_color="Green")
 
         PLAY_BACK.changeColor(PLAY_MOUSE_POS)
@@ -55,7 +55,7 @@ def options():
         OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
         SCREEN.blit(OPTIONS_TEXT, OPTIONS_RECT)
 
-        OPTIONS_BACK = Button(image=None, pos=(640, 460), 
+        OPTIONS_BACK = Bouton(image=None, pos=(640, 460), 
                             text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green")
 
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
@@ -82,11 +82,11 @@ def main_menu():
         MENU_TEXT = get_font(100).render("MAIN MENU", True, "#e8aa46")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
-        PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250), 
+        PLAY_BUTTON = Bouton(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250), 
                             text_input="PLAY", font=get_font(75), base_color="#def29b", hovering_color="White")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 400), 
+        OPTIONS_BUTTON = Bouton(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 400), 
                             text_input="OPTIONS", font=get_font(75), base_color="#def29b", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550), 
+        QUIT_BUTTON = Bouton(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550), 
                             text_input="QUIT", font=get_font(75), base_color="#def29b", hovering_color="White")
 
         SCREEN.blit(MENU_TEXT, MENU_RECT)
