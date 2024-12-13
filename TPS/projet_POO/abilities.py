@@ -48,3 +48,23 @@ class Bomb(Ability):
         print_f(f"{user.name} a utiliser l'habilité bombe.")
         user.has_acted = True
         game.clear_affected_tiles()  # supprime la fumée après utilisation 
+class Sniper(Ability):
+    """habilité sniper."""
+    def __init__(self):
+        super().__init__("Sniper")
+
+    def activate(self, game, user, target_pos):
+        target_x, target_y = target_pos
+        target_unit = next((unit for unit in game.units if unit.x == target_x and unit.y == target_y), None)
+        if target_unit:
+            distance = abs(user.x - target_x) + abs(user.y - target_y)
+            damage = max(20, 50 - (distance * 2))  # Min 20% degat
+            target_unit.take_damage(damage)
+            if target_unit.hp <= 0:  
+                print_f(f"{target_unit.name} a été vaincu !")
+                if game.map[target_unit.y][target_unit.x].tile_type == "grass":
+                    game.map[target_unit.y][target_unit.x].tile_type = "dead_grass"
+                if game.map[target_unit.y][target_unit.x].tile_type == "soil":
+                    game.map[target_unit.y][target_unit.x].tile_type = "dead_soil"
+                game.units.remove(target_unit)
+        user.has_acted = True
