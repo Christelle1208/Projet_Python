@@ -6,7 +6,6 @@ def random_position(row, column, taken_positions):
     x = random.choice(row)
     y = random.choice(column)
     while (x, y) in taken_positions:
-        print("doublon")
         x = random.choice(row)
         y = random.choice(column)
     return (x, y)
