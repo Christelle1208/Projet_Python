@@ -88,3 +88,15 @@ class Smoke(Ability):
         print_f(f"Fumée appliquée autour de la zone ({center_x}, {center_y}).")
         print_f(f"{user.name} a utilisé l'habilité fumée.")
         user.has_acted = True
+class Heal(Ability):
+    """habilité pour soigner."""
+    
+    def __init__(self):
+        super().__init__("Heal")
+
+    def activate(self, game, user, _):
+        friendly_units = [unit for unit in game.units if unit.team == user.team]
+        for unit in friendly_units:
+            if abs(unit.x - user.x) <= 3 and abs(unit.y - user.y) <= 3:
+                unit.hp = min(unit.hp + 20, unit.max_hp)
+        user.has_acted = True
