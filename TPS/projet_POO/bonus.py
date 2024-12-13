@@ -66,6 +66,6 @@ class Bonus:
         # Choisir un type de bonus aléatoire parmi les options possibles
         effect_type = random.choice(['health', 'attack', 'defense'])
 
-        # Retourner une instance du bonus généré
+        # Retourner une instance du bonus généré 
         return Bonus(x, y, effect_type, cell_size)
 
