@@ -68,3 +68,16 @@ class Sniper(Ability):
                     game.map[target_unit.y][target_unit.x].tile_type = "dead_soil"
                 game.units.remove(target_unit)
         user.has_acted = True
+class Smoke(Ability):
+    """habilité fumée."""
+    def __init__(self):
+        super().__init__("Smoke")
+
+    def activate(self, game, user, target_pos):
+        center_x, center_y = target_pos
+        affected_tiles = [
+            (center_x + dx, center_y + dy)
+            for dx in range(-1, 2)
+            for dy in range(-1, 2)
+            if 0 <= center_x + dx < len(game.map[0]) and 0 <= center_y + dy < len(game.map)
+        ]
