@@ -51,15 +51,31 @@ def options():
 
         SCREEN.fill("white")
 
-        OPTIONS_TEXT = get_font(45).render("This is the OPTIONS screen.", True, "Black")
-        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
+        OPTIONS_TEXT = get_font(45).render("Choose a map :", True, "Black")
+        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 200))
         SCREEN.blit(OPTIONS_TEXT, OPTIONS_RECT)
 
-        OPTIONS_BACK = Bouton(image=None, pos=(640, 460), 
+        OPTIONS_BACK = Bouton(image=None, pos=(640, 660), 
                             text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green")
+        
+        MAP1 = Bouton(image=None, pos=(640, 300), 
+                            text_input="MAP 1", font=get_font(75), base_color="Green", hovering_color="Purple")
+        
+        MAP2 = Bouton(image=None, pos=(640, 400), 
+                            text_input="MAP 2", font=get_font(75), base_color="Orange", hovering_color="Purple")
+        
+        MAP3 = Bouton(image=None, pos=(640, 500), 
+                            text_input="MAP 3", font=get_font(75), base_color="Red", hovering_color="Purple")
 
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_BACK.update(SCREEN)
+
+        MAP1.changeColor(OPTIONS_MOUSE_POS)
+        MAP1.update(SCREEN)
+        MAP2.changeColor(OPTIONS_MOUSE_POS)
+        MAP2.update(SCREEN)
+        MAP3.changeColor(OPTIONS_MOUSE_POS)
+        MAP3.update(SCREEN)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -69,10 +85,20 @@ def options():
                 if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
                     CLICK_SOUND.play()
                     main_menu()
+                if MAP1.checkForInput(OPTIONS_MOUSE_POS):
+                    CLICK_SOUND.play()
+                    return 1
+                if MAP2.checkForInput(OPTIONS_MOUSE_POS):
+                    CLICK_SOUND.play()
+                    return 2
+                if MAP3.checkForInput(OPTIONS_MOUSE_POS):
+                    CLICK_SOUND.play()
+                    return 3
 
         pygame.display.update()
 
 def main_menu():
+    map_chosen = 1
     while True:
         # background_music.play()
         SCREEN.blit(BG, (0, 0))
@@ -102,10 +128,12 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     CLICK_SOUND.play()
-                    play()
+                    return map_chosen
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     CLICK_SOUND.play()
-                    options()
+                    chosen_map = options()
+                    if chosen_map is not None:
+                        map_chosen = chosen_map #update de la map choisie
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     CLICK_SOUND.play() 
                     pygame.quit()
@@ -113,4 +141,4 @@ def main_menu():
 
         pygame.display.update()
 
-main_menu()
+# main_menu()
