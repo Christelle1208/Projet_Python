@@ -81,3 +81,10 @@ class Smoke(Ability):
             for dy in range(-1, 2)
             if 0 <= center_x + dx < len(game.map[0]) and 0 <= center_y + dy < len(game.map)
         ]
+        for x, y in affected_tiles:
+            tile = game.map[y][x]
+            tile.is_smoke_covered = True
+            tile.smoke_duration = 3
+        print_f(f"Fumée appliquée autour de la zone ({center_x}, {center_y}).")
+        print_f(f"{user.name} a utilisé l'habilité fumée.")
+        user.has_acted = True
