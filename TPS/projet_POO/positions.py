@@ -1,24 +1,18 @@
-import random
+import random 
+       
+def random_position(row, column, taken_positions):
+    
+    """Génère une position aléatoire unique."""
+    x = random.choice(row)
+    y = random.choice(column)
+    while (x, y) in taken_positions:
+        print("doublon")
+        x = random.choice(row)
+        y = random.choice(column)
+    return (x, y)
 
-    def random_position(ligne, colonne, taken_positions):
-            """Génère une position aléatoire unique."""
-            x = random.choice(ligne)
-            y = random.choice(colonne)
-            while (x, y) in taken_positions:
-                print("doublon")
-                x = random.choice(ligne)
-                y = random.choice(colonne)
-            return (x, y)
+PLAYER1_ROW = range(1, 5)  
+PLAYER1_COLUMN = range(1, 5)  
 
-        player1_ligne = range(1, 5)  
-        player1_colonne = range(1, 5)  
-
-        player2_ligne = range (16,20)
-        player2_colonne = range(16,20)
-
-# liste = []
-# ligne = [1,2,3,4,5]
-# colonne = [1,2,3,4,5]
-# for i in range(4):
-#     liste.append(random_position(ligne, colonne, liste))
-# print (liste)
+PLAYER2_ROW = range (16,20)
+PLAYER2_COLUMN = range(16,20)
