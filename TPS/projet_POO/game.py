@@ -134,4 +134,26 @@ class Game:
         self.current_turn = "player2" if self.current_turn == "player1" else "player1"
         print_f(f"Au tour de {self.current_turn}")
         self.start_turn()
+
+    def draw_abilities(self):
+        font = pygame.font.Font(None, 24)
+        
+        cooldowns = self.player1_cooldowns if self.current_turn == "player1" else self.player2_cooldowns
+        
+        ability_texts = [
+            f"1: Bomb ({cooldowns['Bomb']}R)" if cooldowns["Bomb"] > 0 else "1: Bomb",
+            f"2: Sniper ({cooldowns['Sniper']}R)" if cooldowns["Sniper"] > 0 else "2: Sniper",
+            f"3: Smoke ({cooldowns['Smoke']}R)" if cooldowns["Smoke"] > 0 else "3: Smoke",
+            f"4: Heal ({cooldowns['Heal']}R)" if cooldowns["Heal"] > 0 else "4: Heal"
+        ]
+        
+        x_cooldowns_pos = 10
+        y_cooldowns_pos = 5  
+        
+        for text in ability_texts:
+        
+            color = (255, 0, 0) if "R" in text else (255, 255, 255)
+            rendered_text = font.render(text, True, color)
+            self.screen.blit(rendered_text, (x_cooldowns_pos, y_cooldowns_pos))
+            x_cooldowns_pos += 120 
             
