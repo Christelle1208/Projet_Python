@@ -310,3 +310,48 @@ class Game:
                     equipment.apply(unit)  
                     print_f(f"{unit.name}  {equipment.name}!")
                     self.equipment_positions.remove((x, y, equipment)) 
+
+
+    def confirm_action(self):
+        """confirme les actions dans le jeu."""
+        target_unit = next((unit for unit in self.units if unit.x == self.cursor_pos[0] and unit.y == self.cursor_pos[1]), None)
+        x, y = self.cursor_pos
+
+        if not self.can_move_to(self.selected_unit, x, y):
+            print_f(f"{self.selected_unit.name} ne peut pas se déplacer à ({x}, {y}). ")
+            return
+
+        if target_unit:
+            if target_unit.team == self.selected_unit.team:
+                print_f(f"{self.selected_unit.name} ne peut pas se déplacer sur la case de {target_unit.name} ")
+                return
+            else:
+                print_f(f"{self.selected_unit.name} attaque {target_unit.name}!")
+                self.selected_unit.attack_enemy(target_unit)
+                if target_unit.hp <= 0:
+                    print_f(f"{target_unit.name} a été vaincu !")
+                    if self.map[target_unit.y][target_unit.x].tile_type == "grass":
+                        self.map[target_unit.y][target_unit.x].tile_type = "dead_grass"
+                    if self.map[target_unit.y][target_unit.x].tile_type == "soil":
+                        self.map[target_unit.y][target_unit.x].tile_type = "dead_soil"
+                    self.units.remove(target_unit)
+        else:
+            print_f(f"{self.selected_unit.name} se déplace à ({x}, {y}). ")
+            self.selected_unit.x, self.selected_unit.y = x, y
+
+            current_tile = self.map[y][x]
+            if current_tile.tile_type == "mud" and current_tile.is_hidden:
+                current_tile.reveal()
+                print_f(f"boue révélée à ({x}, {y}).")
+
+        # maj sur les actions d'un charactère pour passer au suivant 
+        self.selected_unit.has_acted = True
+        self.check_equipment_pickup()
+        remaining_units = [unit for unit in self.units if unit.team == self.current_turn and not unit.has_acted]
+        if not remaining_units:  
+            self.switch_turn() 
+        else:
+            self.select_next_unit()
+        
+        self.update_visibility()
+
