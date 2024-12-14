@@ -92,3 +92,28 @@ class Game:
                     tile = Tile(x, y, tile_type, self.cell_size, self.hidden_mud)
                     tile_row.append(tile)
                 self.map.append(tile_row)
+
+    def start_turn(self):
+        """Reset les unités pour le nouveau tour"""
+        for unit in self.units:
+            if unit.team == self.current_turn:
+                unit.has_acted = False
+        self.update_visibility()
+        self.current_unit_index = 0
+        self.select_next_unit()
+        
+        
+
+    def select_next_unit(self):
+        self.update_visibility()
+        """sélectionne les unités suivantes"""
+        if self.check_game_over():
+                return
+        player_units = [unit for unit in self.units if unit.team == self.current_turn and not unit.has_acted]
+        if player_units:
+            self.selected_unit = player_units[self.current_unit_index % len(player_units)]
+            self.selected_unit.is_selected = True
+            self.cursor_pos = (self.selected_unit.x, self.selected_unit.y)
+        else:
+            self.switch_turn()
+            
