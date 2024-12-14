@@ -241,3 +241,26 @@ class Game:
             self.display_game_over("le joueur 1 a gagné!")
             return True
         return False
+   def display_game_over(self, message):
+        """affichage game over."""
+        font = pygame.font.Font(None, 72)
+        text = font.render("Game Over", True, (255, 255, 255))
+        winner_text = font.render(message, True, (255, 255, 255))
+
+        self.screen.fill((0, 0, 0)) 
+        self.screen.blit(text, (self.screen.get_width() // 2 - text.get_width() // 2, self.screen.get_height() // 3))
+        self.screen.blit(winner_text, (self.screen.get_width() // 2 - winner_text.get_width() // 2, self.screen.get_height() // 2))
+        pygame.display.flip()
+        pygame.time.wait(7000) 
+        pygame.quit()
+        exit()
+
+    def can_move_to(self, unit, x, y):
+        """vérifie si une unité peut se déplacer à une position donnéee."""
+        if not (0 <= x < len(self.map[0]) and 0 <= y < len(self.map)):  
+            return False
+
+        target_tile = self.map[y][x]
+        if (target_tile.tile_type == "water" and unit.name != "Mage") or target_tile.tile_type == "rock":
+            return False
+        return unit.can_move_to(x, y,self.map)
