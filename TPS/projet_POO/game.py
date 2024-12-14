@@ -134,6 +134,7 @@ class Game:
         self.current_turn = "player2" if self.current_turn == "player1" else "player1"
         print_f(f"Au tour de {self.current_turn}")
         self.start_turn()
+        
 
     def draw_abilities(self):
         font = pygame.font.Font(None, 24)
@@ -156,4 +157,23 @@ class Game:
             rendered_text = font.render(text, True, color)
             self.screen.blit(rendered_text, (x_cooldowns_pos, y_cooldowns_pos))
             x_cooldowns_pos += 120 
+
+
+    def expire_smoke(self):
+        for row in self.map:
+            for tile in row:
+                if tile.is_smoke_covered:
+                    tile.smoke_duration -= 1
+                    if tile.smoke_duration <= 0:
+                        tile.is_smoke_covered = False
+                        
+                        
+    def add_affected_tiles(self, tiles, color):
+        """ajout des tiles afféctées par une habilité."""
+        self.affected_tiles = [(x, y, color) for x, y in tiles]
+        
+    
+    def clear_affected_tiles(self):
+        """supprime les tiles affectées."""
+        self.affected_tiles = []
             
