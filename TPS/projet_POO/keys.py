@@ -1,4 +1,6 @@
 import pygame
+from print_f import *
+from abilities import *
 
 def handle_key(self, key):
 
