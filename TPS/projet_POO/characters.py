@@ -1,4 +1,5 @@
 from unit import *
+from print_f import *
 
 class Tank(Unit):
     def __init__(self, name, image_path):
