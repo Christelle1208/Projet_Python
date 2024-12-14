@@ -1,34 +1,41 @@
 import pygame
+import json
 import random
-
-from unit_copy import *
-from characters import *
-
+from tiles import Tile
+from characters import * 
+from abilities import *
+from config import *
+from equipment import *
+from print_f import *
+from positions import *
+from menu import *
 
 class Game:
-    """
-    Classe pour représenter le jeu.
+    def __init__(self, screen, map_choice):
+        
+        self.screen = screen
+        self.hidden_mud = set()
+        self.map = []
+        self.cell_size = CELL_SIZE
+        self.current_turn = "player1"
+        self.units = []
+        self.current_unit_index = 0
+        self.cursor_pos = (1, 1)
+        self.ability_mode = None 
+        self.affected_tiles = []
+        self.player1_cooldowns = {"Bomb": 2, "Sniper": 2, "Smoke": 0, "Heal": 2}
+        self.player2_cooldowns = {"Bomb": 2, "Sniper": 2, "Smoke": 0, "Heal": 2}
+        self.cursor_alpha = 0 
+        self.cursor_alpha_direction = 1  
 
-    ...
-    Attributs
-    ---------
-    screen: pygame.Surface
-        La surface de la fenêtre du jeu.
-    player_units : list[Unit]
-        La liste des unités du joueur.
-    enemy_units : list[Unit]
-        La liste des unités de l'adversaire.
-    """
 
-    def __init__(self, screen):
-        """
-        Construit le jeu avec la surface de la fenêtre.
+        with open(f"assets/map{map_choice}.json") as f:
+            data = json.load(f)
+            self.load_map(data)
 
-        Paramètres
-        ----------
-        screen : pygame.Surface
-            La surface de la fenêtre du jeu.
-        """
+        self.initialize_units()
+        self.spawn_equipment()
+        self.start_turn()
 
         def generate_positions(rows):
             """Génère trois positions aléatoires dans des lignes définies."""
