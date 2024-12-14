@@ -30,7 +30,7 @@ class Bomb(Ability):
                 abs(dx) + abs(dy) <= 3
             )
         ]
-# dégats sur la zone affectée
+        # dégats sur la zone affectée
         for unit in game.units:
             if (unit.x, unit.y) in affected_tiles:
                 distance = abs(unit.x - center_x) + abs(unit.y - center_y)
@@ -48,6 +48,8 @@ class Bomb(Ability):
         print_f(f"{user.name} a utiliser l'habilité bombe.")
         user.has_acted = True
         game.clear_affected_tiles()  # supprime la fumée après utilisation 
+
+
 class Sniper(Ability):
     """habilité sniper."""
     def __init__(self):
@@ -68,6 +70,8 @@ class Sniper(Ability):
                     game.map[target_unit.y][target_unit.x].tile_type = "dead_soil"
                 game.units.remove(target_unit)
         user.has_acted = True
+
+
 class Smoke(Ability):
     """habilité fumée."""
     def __init__(self):
@@ -81,6 +85,7 @@ class Smoke(Ability):
             for dy in range(-1, 2)
             if 0 <= center_x + dx < len(game.map[0]) and 0 <= center_y + dy < len(game.map)
         ]
+
         for x, y in affected_tiles:
             tile = game.map[y][x]
             tile.is_smoke_covered = True
@@ -88,6 +93,8 @@ class Smoke(Ability):
         print_f(f"Fumée appliquée autour de la zone ({center_x}, {center_y}).")
         print_f(f"{user.name} a utilisé l'habilité fumée.")
         user.has_acted = True
+
+
 class Heal(Ability):
     """habilité pour soigner."""
     
