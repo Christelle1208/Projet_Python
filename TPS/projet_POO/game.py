@@ -116,4 +116,22 @@ class Game:
             self.cursor_pos = (self.selected_unit.x, self.selected_unit.y)
         else:
             self.switch_turn()
+
+            
+    def decrement_cooldowns(self):
+        """décrémentation du temps d'attente."""
+        cooldowns = self.player1_cooldowns if self.current_turn == "player1" else self.player2_cooldowns
+        for ability in cooldowns:
+            if cooldowns[ability] > 0:
+                cooldowns[ability] -= 1
+                
+                
+
+    def switch_turn(self):
+        """Change le tour des joueurs."""
+        self.expire_smoke()
+        self.decrement_cooldowns()
+        self.current_turn = "player2" if self.current_turn == "player1" else "player1"
+        print_f(f"Au tour de {self.current_turn}")
+        self.start_turn()
             
