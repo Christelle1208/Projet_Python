@@ -6,12 +6,12 @@ pygame.init()
 
 background_music=pygame.mixer.music.load("assets/Background music.mp3")
 pygame.mixer.music.play(10, 0.0)
-CLICK_SOUND = pygame.mixer.Sound("assets\Click Sound.wav")
+CLICK_SOUND = pygame.mixer.Sound("assets/Click Sound.wav")
 
 SCREEN = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Menu")
 
-BG = pygame.image.load("assets\Background Image.jpg")
+BG = pygame.image.load("assets/Background Image.jpg")
 #Resize the background image to fit the screen
 BG = pygame.transform.scale(BG, (1280, 720))
 
