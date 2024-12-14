@@ -5,7 +5,7 @@ from tiles import Tile
 from characters import * 
 from abilities import *
 from config import *
-from equipment import *
+from equipements import *
 from print_f import *
 from positions import *
 from menu import *
@@ -95,38 +95,8 @@ class Game:
         self.enemy_units = [Personnage(type_ennemi[0],team,player2_pos[0]).character(),
                             Personnage(type_ennemi[1],team,player2_pos[1]).character(),
                             Personnage(type_ennemi[2],team,player2_pos[2]).character()]
-        
-    def handle_player_turn(self,player):
-        """Tour du joueur."""
-        for selected_unit in self.player_units if player == 1 else self.enemy_units:
 
-            # Calculer les cases accessibles pour l'unité sélectionnée
-            selected_unit.is_selected = True
-            selected_unit.accessible_tiles = selected_unit.get_accessible_tiles(move_range=selected_unit.move_range)  # Fixe les cases accessibles
-            self.flip_display()  # Rafraîchit l'affichage avec les cases accessibles
-
-            has_acted = False
-            while not has_acted:
-
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        exit()
-
-                    # Gestion des clics de souris
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        mouse_x, mouse_y = event.pos
-                        clicked_x, clicked_y = mouse_x // CELL_SIZE, mouse_y // CELL_SIZE
-
-                        # Vérifier si le clic est sur une case accessible
-                        if (clicked_x, clicked_y) in selected_unit.accessible_tiles:
-                            selected_unit.x, selected_unit.y = clicked_x, clicked_y
-                            has_acted = True
-                            selected_unit.is_selected = False
-                            selected_unit.accessible_tiles = []  # Effacer les cases accessibles après le déplacement
-                            self.flip_display()  # Rafraîchir l'affichage
-
-
+    
     def flip_display(self):
         """Affiche le jeu."""
 
