@@ -5,7 +5,7 @@ from tiles import Tile
 from characters import * 
 from abilities import *
 from config import *
-from equipments import *
+from equipements import *
 from print_f import *
 from positions import *
 from menu import *
