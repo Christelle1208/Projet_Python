@@ -1,9 +1,11 @@
 import pygame
 from config import CELL_SIZE
 import random
+from print_f import *
+from collections import deque
 
 class Unit:
-    def __init__(self, name, hp, attack, defense, range ,evasion, image_path):
+    def __init__(self, name, hp, attack, defense, range, evasion, image_path):
         self.name = name
         self.max_hp = hp
         self.hp = hp
@@ -16,83 +18,107 @@ class Unit:
         self.y = 0
         self.team = None
         self.image = pygame.image.load(image_path)
-        self.image = pygame.transform.scale(self.image, (CELL_SIZE, CELL_SIZE))  # Scale image to fit the tile
-        self.is_visible = True  # Assume all units start visible
-        self.game = None  # Placeholder for the associated Game instance
+        self.image = pygame.transform.scale(self.image, (CELL_SIZE, CELL_SIZE))  
+        self.is_visible = True
+        self.game = None
 
     def set_game(self, game):
-        """Associate this unit with a Game instance."""
+        """Association de cette unité à une instance de jeu."""
         self.game = game
 
     def draw(self, screen, current_turn):
-        """Draw the unit and its HP bar if visible."""
+        """Dessinez l'unité et sa barre HP si elle est visible."""
         if not self.is_visible and self.team != current_turn:
-            return  
+            return 
 
-        # Draw the character image
+        # dessin de l'image du personnage
         screen.blit(self.image, (self.x * CELL_SIZE, self.y * CELL_SIZE))
 
         if self.team == current_turn:
-            border_color = (0, 0, 255)  # Blue for friendly units
+            border_color = (0, 0, 255)  # bleu pour les unités alliées
         elif self.is_visible:
-            border_color = (255, 0, 0)  # Red for visible enemies
+            border_color = (255, 0, 0)  # rouge pour l'ennemi
         else:
             border_color = None
 
-        # Draw border around the unit's tile
+        # dessine les contours des personnages
         if border_color:
             pygame.draw.rect(
                 screen,
                 border_color,
                 (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE),
-                3  # Border thickness
+                3
             )
-        # Draw the HP bar
-        bar_width = 5  # Starting position 
-        bar_height = CELL_SIZE  # Small height for the HP bar
-        bar_x = self.x * CELL_SIZE + CELL_SIZE  # Positioned to the right of the unit
-        bar_y = self.y * CELL_SIZE + (CELL_SIZE - bar_height) // 2  # Centered vertically
 
-        # Calculate HP bar proportion
-        hp_ratio = max(0, self.hp / self.max_hp)  # Ensure the ratio is not negative
+        # barre de vie
+        bar_width = 5
+        bar_height = CELL_SIZE
+        bar_x = self.x * CELL_SIZE + CELL_SIZE
+        bar_y = self.y * CELL_SIZE + (CELL_SIZE - bar_height) // 2
+
+        # calcul de la barre proportionnelle pour les PV
+        hp_ratio = max(0, self.hp / self.max_hp)
         hp_fill_height = int(bar_height * hp_ratio)
 
-        # Draw the background of the HP bar
-        pygame.draw.rect(screen, (255, 0, 0), (bar_x - 5, bar_y, bar_width, bar_height))  # Red background for missing HP
-        pygame.draw.rect(screen, (0, 255, 0), (bar_x - 5, bar_y + bar_height - hp_fill_height, bar_width,hp_fill_height))  # Green for current HP
-
+        # dessin de la barre de vie
+        pygame.draw.rect(screen, (255, 0, 0), (bar_x - 5, bar_y, bar_width, bar_height))  
+        pygame.draw.rect(screen, (0, 255, 0), (bar_x - 5, bar_y + bar_height - hp_fill_height, bar_width, hp_fill_height)) 
 
     def take_damage(self, amount, ignore_defense=False):
-        """Calculate and apply damage, considering evasion."""
+        """Calcule et applique les dégâts avec gestion de l'évasion."""
         evasion = self.evasion
-        if self.game.map[self.y][self.x].tile_type == "lava":
+        if self.game.map[self.y][self.x].tile_type == "mud":
             evasion -= 0.1
-        if random.random() < evasion:  # Check if the attack is evaded
-            if self.is_visible:  # Only print feedback if the unit is visible
-                print(f"{self.name} dodges the attack!")
-            return  # No damage is applied if the attack is dodged
+        if random.random() < evasion:  # vérification de l'évasion
+            if self.is_visible:
+                print_f(f"{self.name} a esquivé l'attaque !")
+            return
 
-        # Apply damage if the attack is not dodged
-        if ignore_defense:
-            self.hp -= amount
-        else:
-            damage_taken = max(0, amount - self.defense)
-            self.hp -= damage_taken
+        # dégâts si l'évasion échoue
+        damage_taken = amount if ignore_defense else max(0, amount - self.defense)
+        self.hp -= damage_taken
 
-        if self.is_visible:  # Only print feedback if the unit is visible
-            print(f"{self.name} takes {amount} damage! HP left: {self.hp}")
+        if self.is_visible:
+            print_f(f"{self.name} prend {amount} dégâts ! PV restant: {self.hp}")
 
     def can_move_to(self, x, y, map):
-        """Check if the target position (x, y) is within the unit's movement range."""
-        return (
-            (abs(self.x - x) + abs(self.y - y) <= (self.range + 1)) and
-            1 <= x < len(map[0]) -1 and
-            1 <= y < len(map) - 1
-        )
+        """Vérifie si la position cible (x, y) est dans la portée de mouvement de l'unité."""
+        if not (0 <= x < len(map[0]) and 0 <= y < len(map)):
+            return False
+
+        obstacles = {"rock", "wall", "water"}
+        if self.name == "Mage":
+            obstacles.remove("water")
+
+        
+        queue = deque([(self.x, self.y, 0)])
+        visited = set()
+        visited.add((self.x, self.y))
+
+        while queue:
+            current_x, current_y, steps = queue.popleft()
+            if (current_x, current_y) == (x, y):
+                return True
+            if steps >= self.range + 1:
+                continue
+
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                next_x, next_y = current_x + dx, current_y + dy
+
+                if (1 <= next_x < len(map[0]) - 1 and
+                    1 <= next_y < len(map) - 1 and
+                    (next_x, next_y) not in visited):
+                    tile = map[next_y][next_x]
+                    if tile.tile_type not in obstacles:
+                        queue.append((next_x, next_y, steps + 1))
+                        visited.add((next_x, next_y))
+
+        return False
 
     def attack_enemy(self, target):
         attack = self.attack
-        if self.game.map[self.y][self.x].tile_type == "lava":
+        if self.game.map[self.y][self.x].tile_type == "mud":
             attack *= 0.9
-        print(f"{self.name} attacks {target.name} with power {attack}.")
+        print_f(f"{self.name} attaque {target.name} avec des dégâts de {attack}.")
         target.take_damage(attack)
+
