@@ -1,7 +1,7 @@
 import pygame
 import json
 from game import Game
-from config import CELL_SIZE, MAP1, MAP2, MAP3
+from config import *
 from print_f import *
 from positions import *
 from menu import *
