@@ -265,7 +265,6 @@ class Game:
         if (target_tile.tile_type == "water" and unit.name != "Mage") or target_tile.tile_type == "rock":
             return False
         return unit.can_move_to(x, y,self.map)
-=======
 
     def spawn_equipment(self):
 
@@ -311,4 +310,3 @@ class Game:
                     equipment.apply(unit)  
                     print_f(f"{unit.name}  {equipment.name}!")
                     self.equipment_positions.remove((x, y, equipment)) 
->>>>>>> 32034c3f8f95e2d4025794e80ca62b68273c2767
