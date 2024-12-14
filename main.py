@@ -5,7 +5,6 @@ from config import *
 from print_f import *
 from positions import *
 from menu import *
-from keys import *
 
 def main():
     map_choice = main_menu()
