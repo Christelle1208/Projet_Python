@@ -241,3 +241,48 @@ class Game:
             self.display_game_over("le joueur 1 a gagné!")
             return True
         return False
+
+    def spawn_equipment(self):
+
+        self.equipment_positions = []  #
+        occupied_positions = {(unit.x, unit.y) for unit in self.units}  
+        
+        left_positions = [
+            (x, y) for y in range(1, len(self.map) // 2)
+            for x in range(1, len(self.map[0]) // 2)
+            if self.map[y][x].tile_type not in ("wall", "rock", "mud") and (x, y) not in occupied_positions
+        ]
+        right_positions = [
+            (x, y) for y in range(len(self.map) // 2, len(self.map) - 1)
+            for x in range(len(self.map[0]) // 2, len(self.map[0]) - 1)
+            if self.map[y][x].tile_type not in ("wall", "rock", "mud") and (x, y) not in occupied_positions
+        ]
+
+        for _ in range(3):
+            
+            left_water_positions = [pos for pos in left_positions if self.map[pos[1]][pos[0]].tile_type == "water"]
+            if left_water_positions:
+                pos = random.choice(left_water_positions)
+                self.equipment_positions.append((pos[0], pos[1], random.choice([AttackBoost(10), DefenseBoost(5), EvasionBoost(0.1)])))
+                left_positions.remove(pos)
+                
+            if left_positions:
+                pos = random.choice(left_positions)
+                self.equipment_positions.append((pos[0], pos[1], random.choice([AttackBoost(10), DefenseBoost(5), EvasionBoost(0.1)])))
+                left_positions.remove(pos)
+
+            if right_positions:
+                pos = random.choice(right_positions)
+                self.equipment_positions.append((pos[0], pos[1], random.choice([AttackBoost(10), DefenseBoost(5), EvasionBoost(0.1)])))
+                right_positions.remove(pos)
+
+
+
+    def check_equipment_pickup(self):
+        """vérifie si un charactère a récupérer un équipement."""
+        for (x, y, equipment) in self.equipment_positions[:]:
+            for unit in self.units:
+                if (unit.x, unit.y) == (x, y):
+                    equipment.apply(unit)  
+                    print_f(f"{unit.name}  {equipment.name}!")
+                    self.equipment_positions.remove((x, y, equipment)) 
