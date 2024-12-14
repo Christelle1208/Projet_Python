@@ -37,6 +37,36 @@ class Game:
         self.spawn_equipment()
         self.start_turn()
 
+        
+    def initialize_units(self):
+        """initialisation des joueurs sur la map"""
+
+        player1_start_positions,player2_start_positions = [],[]
+        for i in range(4):
+            player1_start_positions.append(random_position(PLAYER1_ROW,PLAYER1_COLUMN,player1_start_positions))
+            player2_start_positions.append(random_position(PLAYER2_ROW,PLAYER2_COLUMN,player2_start_positions))
+        
+        self.units = [
+            Tank("Tank", PLAYER1_IMAGES["T"]), Assassin("Assassin", PLAYER1_IMAGES["A"]),
+            archer("archer", PLAYER1_IMAGES["M"]), Mage("Mage", PLAYER1_IMAGES["G"]),
+            Tank("Tank", PLAYER2_IMAGES["T"]), Assassin("Assassin", PLAYER2_IMAGES["A"]),
+            archer("archer", PLAYER2_IMAGES["M"]), Mage("Mage", PLAYER2_IMAGES["G"])
+        ]
+
+        for i, unit in enumerate(self.units):
+            if i < 4: 
+                unit.team = "player1"
+                unit.x, unit.y = player1_start_positions[i]
+            else:  
+                unit.team = "player2"
+                unit.x, unit.y = player2_start_positions[i - 4]
+            unit.set_game(self)
+
+
+
+
+        
+
         def generate_positions(rows):
             """Génère trois positions aléatoires dans des lignes définies."""
             positions = set()  # Utiliser un set pour éviter les doublons
