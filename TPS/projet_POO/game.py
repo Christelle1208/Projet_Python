@@ -241,7 +241,7 @@ class Game:
             self.display_game_over("le joueur 1 a gagné!")
             return True
         return False
-<<<<<<< HEAD
+        
    def display_game_over(self, message):
         """affichage game over."""
         font = pygame.font.Font(None, 72)
