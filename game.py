@@ -1,13 +1,13 @@
 import pygame
 import json
-import random
 from tiles import Tile
 from characters import * 
-from abilities import *
+from abilities import Bomb, Sniper, Smoke, Heal 
 from config import *
-from equipements import *
+import random
+from equipement import AttackBoost, DefenseBoost, EvasionBoost
 from print_f import *
-from positions import *
+from positions import random_position, PLAYER1_ROW, PLAYER1_COLUMN, PLAYER2_ROW, PLAYER2_COLUMN
 from menu import *
 
 class Game:
@@ -37,7 +37,6 @@ class Game:
         self.spawn_equipment()
         self.start_turn()
 
-        
     def initialize_units(self):
         """initialisation des joueurs sur la map"""
 
@@ -62,6 +61,79 @@ class Game:
                 unit.x, unit.y = player2_start_positions[i - 4]
             unit.set_game(self)
 
+    def load_map(self, data):
+        """chargement des tiles"""
+        num_rows = len(data["layers"][0]["data"])
+        num_columns = len(data["layers"][0]["data"][0]) if num_rows > 0 else 0
+        self.cell_size = min(self.screen.get_width() // num_columns, self.screen.get_height() // num_rows)
+
+
+        for y, row in enumerate(data["layers"][0]["data"]):
+            for x, tile_id in enumerate(row):
+                if tile_id == 3:  # BOUE
+                    self.hidden_mud.add((x, y))
+
+        
+        for y, row in enumerate(data["layers"][0]["data"]):
+            tile_row = []
+            for x, tile_id in enumerate(row):
+                tile_type = (
+                "wall" if tile_id == 0 else
+                "grass" if tile_id == 1 else
+                "water" if tile_id == 2 else
+                "mud" if tile_id == 3 else
+                "soil" if tile_id == 4 else
+                "rock" if tile_id == 5 else
+                "grass"
+                )
+                tile = Tile(x, y, tile_type, self.cell_size, self.hidden_mud)
+                tile_row.append(tile)
+            self.map.append(tile_row)
+    
+    def start_turn(self):
+        """Reset les unités pour le nouveau tour"""
+        for unit in self.units:
+            if unit.team == self.current_turn:
+                unit.has_acted = False
+        self.update_visibility()
+        self.current_unit_index = 0
+        self.select_next_unit()
+        
+        
+
+    def select_next_unit(self):
+        self.update_visibility()
+        """sélectionne les unités suivantes"""
+        if self.check_game_over():
+                return
+        player_units = [unit for unit in self.units if unit.team == self.current_turn and not unit.has_acted]
+        if player_units:
+            self.selected_unit = player_units[self.current_unit_index % len(player_units)]
+            self.selected_unit.is_selected = True
+            self.cursor_pos = (self.selected_unit.x, self.selected_unit.y)
+        else:
+            self.switch_turn()
+            
+            
+
+    def decrement_cooldowns(self):
+        """décrémentation du temps d'attente."""
+        cooldowns = self.player1_cooldowns if self.current_turn == "player1" else self.player2_cooldowns
+        for ability in cooldowns:
+            if cooldowns[ability] > 0:
+                cooldowns[ability] -= 1
+                
+                
+
+    def switch_turn(self):
+        """Change le tour des joueurs."""
+        self.expire_smoke()
+        self.decrement_cooldowns()
+        self.current_turn = "player2" if self.current_turn == "player1" else "player1"
+        print_f(f"Au tour de {self.current_turn}")
+        self.start_turn()
+            
+    
     def handle_key(self, key):
 
         self.clear_affected_tiles()
@@ -168,78 +240,6 @@ class Game:
             if self.selected_unit.can_move_to(new_x, new_y, self.map):
                 self.cursor_pos = (new_x, new_y)
 
- 
-    def load_map(self, data):
-            """chargement des tiles"""
-            num_rows = len(data["layers"][0]["data"])
-            num_columns = len(data["layers"][0]["data"][0]) if num_rows > 0 else 0
-            self.cell_size = min(self.screen.get_width() // num_columns, self.screen.get_height() // num_rows)
-    
-    
-            for y, row in enumerate(data["layers"][0]["data"]):
-                for x, tile_id in enumerate(row):
-                    if tile_id == 3:  # BOUE
-                        self.hidden_mud.add((x, y))
-    
-            
-            for y, row in enumerate(data["layers"][0]["data"]):
-                tile_row = []
-                for x, tile_id in enumerate(row):
-                    tile_type = (
-                    "wall" if tile_id == 0 else
-                    "grass" if tile_id == 1 else
-                    "water" if tile_id == 2 else
-                    "mud" if tile_id == 3 else
-                    "soil" if tile_id == 4 else
-                    "rock" if tile_id == 5 else
-                    "grass"
-                    )
-                    tile = Tile(x, y, tile_type, self.cell_size, self.hidden_mud)
-                    tile_row.append(tile)
-                self.map.append(tile_row)
-
-    def start_turn(self):
-        """Reset les unités pour le nouveau tour"""
-        for unit in self.units:
-            if unit.team == self.current_turn:
-                unit.has_acted = False
-        self.update_visibility()
-        self.current_unit_index = 0
-        self.select_next_unit()
-        
-        
-
-    def select_next_unit(self):
-        self.update_visibility()
-        """sélectionne les unités suivantes"""
-        if self.check_game_over():
-                return
-        player_units = [unit for unit in self.units if unit.team == self.current_turn and not unit.has_acted]
-        if player_units:
-            self.selected_unit = player_units[self.current_unit_index % len(player_units)]
-            self.selected_unit.is_selected = True
-            self.cursor_pos = (self.selected_unit.x, self.selected_unit.y)
-        else:
-            self.switch_turn()
-
-            
-    def decrement_cooldowns(self):
-        """décrémentation du temps d'attente."""
-        cooldowns = self.player1_cooldowns if self.current_turn == "player1" else self.player2_cooldowns
-        for ability in cooldowns:
-            if cooldowns[ability] > 0:
-                cooldowns[ability] -= 1
-                
-                
-
-    def switch_turn(self):
-        """Change le tour des joueurs."""
-        self.expire_smoke()
-        self.decrement_cooldowns()
-        self.current_turn = "player2" if self.current_turn == "player1" else "player1"
-        print_f(f"Au tour de {self.current_turn}")
-        self.start_turn()
-        
 
     def draw_abilities(self):
         font = pygame.font.Font(None, 24)
@@ -262,7 +262,8 @@ class Game:
             rendered_text = font.render(text, True, color)
             self.screen.blit(rendered_text, (x_cooldowns_pos, y_cooldowns_pos))
             x_cooldowns_pos += 120 
-
+            
+            
 
     def expire_smoke(self):
         for row in self.map:
@@ -272,16 +273,14 @@ class Game:
                     if tile.smoke_duration <= 0:
                         tile.is_smoke_covered = False
                         
-                        
     def add_affected_tiles(self, tiles, color):
         """ajout des tiles afféctées par une habilité."""
         self.affected_tiles = [(x, y, color) for x, y in tiles]
-        
     
     def clear_affected_tiles(self):
         """supprime les tiles affectées."""
         self.affected_tiles = []
-            
+
     def update(self):
         """maj visuel du jeu."""
         for row in self.map:
@@ -322,7 +321,7 @@ class Game:
             affected_surface.fill(color) 
             self.screen.blit(affected_surface, (x * self.cell_size, y * self.cell_size))
 
-        self.cursor_alpha += 2 * self.cursor_alpha_direction
+        self.cursor_alpha += 3 * self.cursor_alpha_direction
         if self.cursor_alpha >= 100 or self.cursor_alpha <= 0:
             self.cursor_alpha_direction *= -1 
 
@@ -331,8 +330,7 @@ class Game:
         self.screen.blit(cursor_surface, (self.cursor_pos[0] * self.cell_size, self.cursor_pos[1] * self.cell_size))
 
         self.draw_abilities()
-
-        
+            
     def check_game_over(self):
         team1_units = [unit for unit in self.units if unit.team == "player1"]
         team2_units = [unit for unit in self.units if unit.team == "player2"]
@@ -346,34 +344,10 @@ class Game:
             self.display_game_over("le joueur 1 a gagné!")
             return True
         return False
-        
-    def display_game_over(self, message):
-        """affichage game over."""
-        font = pygame.font.Font(None, 72)
-        text = font.render("Game Over", True, (255, 255, 255))
-        winner_text = font.render(message, True, (255, 255, 255))
-
-        self.screen.fill((0, 0, 0)) 
-        self.screen.blit(text, (self.screen.get_width() // 2 - text.get_width() // 2, self.screen.get_height() // 3))
-        self.screen.blit(winner_text, (self.screen.get_width() // 2 - winner_text.get_width() // 2, self.screen.get_height() // 2))
-        pygame.display.flip()
-        pygame.time.wait(7000) 
-        pygame.quit()
-        exit()
-
-    def can_move_to(self, unit, x, y):
-        """vérifie si une unité peut se déplacer à une position donnéee."""
-        if not (0 <= x < len(self.map[0]) and 0 <= y < len(self.map)):  
-            return False
-
-        target_tile = self.map[y][x]
-        if (target_tile.tile_type == "water" and unit.name != "Mage") or target_tile.tile_type == "rock":
-            return False
-        return unit.can_move_to(x, y,self.map)
-
+    
     def spawn_equipment(self):
 
-        self.equipment_positions = []  
+        self.equipment_positions = []  #
         occupied_positions = {(unit.x, unit.y) for unit in self.units}  
         
         left_positions = [
@@ -408,13 +382,38 @@ class Game:
 
 
     def check_equipment_pickup(self):
-        """vérifie si un charactère a récupéré un équipement."""
+        """vérifie si un charactère a récupérer un équipement."""
         for (x, y, equipment) in self.equipment_positions[:]:
             for unit in self.units:
                 if (unit.x, unit.y) == (x, y):
                     equipment.apply(unit)  
                     print_f(f"{unit.name}  {equipment.name}!")
                     self.equipment_positions.remove((x, y, equipment)) 
+
+
+    def display_game_over(self, message):
+        """affichage game over."""
+        font = pygame.font.Font(None, 72)
+        text = font.render("Game Over", True, (255, 255, 255))
+        winner_text = font.render(message, True, (255, 255, 255))
+
+        self.screen.fill((0, 0, 0)) 
+        self.screen.blit(text, (self.screen.get_width() // 2 - text.get_width() // 2, self.screen.get_height() // 3))
+        self.screen.blit(winner_text, (self.screen.get_width() // 2 - winner_text.get_width() // 2, self.screen.get_height() // 2))
+        pygame.display.flip()
+        pygame.time.wait(7000) 
+        pygame.quit()
+        exit()
+
+    def can_move_to(self, unit, x, y):
+        """vérifie si une unité peut se déplacer à une position donnée."""
+        if not (0 <= x < len(self.map[0]) and 0 <= y < len(self.map)):  
+            return False
+
+        target_tile = self.map[y][x]
+        if (target_tile.tile_type == "water" and unit.name != "Mage") or target_tile.tile_type == "rock":
+            return False
+        return unit.can_move_to(x, y,self.map)
 
 
     def confirm_action(self):
@@ -460,6 +459,8 @@ class Game:
         
         self.update_visibility()
 
+            
+        
     def update_visibility(self):
         """mets à jour la visibilité des characteres."""
         friendly_units = [unit for unit in self.units if unit.team == self.current_turn]
