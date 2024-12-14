@@ -355,3 +355,16 @@ class Game:
         
         self.update_visibility()
 
+    def update_visibility(self):
+        """mets à jour la visibilité des characteres."""
+        friendly_units = [unit for unit in self.units if unit.team == self.current_turn]
+        enemy_units = [unit for unit in self.units if unit.team != self.current_turn]
+
+        for enemy in enemy_units:
+            in_smoke = self.map[enemy.y][enemy.x].is_smoke_covered
+            enemy.is_visible = not in_smoke and any(
+                abs(enemy.x - ally.x) + abs(enemy.y - ally.y) <= ally.range + 1
+                for ally in friendly_units
+            )
+        for ally in friendly_units:
+            ally.is_visible = True
