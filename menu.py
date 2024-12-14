@@ -1,4 +1,5 @@
-import pygame, sys
+import pygame
+import sys
 from boutons import Bouton
 pygame.mixer.init()
 
@@ -16,7 +17,7 @@ BG = pygame.image.load("assets/Background Image.jpg")
 BG = pygame.transform.scale(BG, (1280, 720))
 
 def get_font(size): # Returns Press-Start-2P in the desired size
-    return pygame.font.Font("assets/font.ttf", size)
+    return pygame.font.Font("assets/font.ttf", size) 
 
 def play():
     while True:
@@ -141,4 +142,3 @@ def main_menu():
 
         pygame.display.update()
 
-# main_menu()
