@@ -175,3 +175,33 @@ def main():
 
 if __name__ == "__main__":
     main()
+ 
+ 
+def load_map(self, data):
+        """chargement des tiles"""
+        num_rows = len(data["layers"][0]["data"])
+        num_columns = len(data["layers"][0]["data"][0]) if num_rows > 0 else 0
+        self.cell_size = min(self.screen.get_width() // num_columns, self.screen.get_height() // num_rows)
+
+
+        for y, row in enumerate(data["layers"][0]["data"]):
+            for x, tile_id in enumerate(row):
+                if tile_id == 3:  # BOUE
+                    self.hidden_mud.add((x, y))
+
+        
+        for y, row in enumerate(data["layers"][0]["data"]):
+            tile_row = []
+            for x, tile_id in enumerate(row):
+                tile_type = (
+                "wall" if tile_id == 0 else
+                "grass" if tile_id == 1 else
+                "water" if tile_id == 2 else
+                "mud" if tile_id == 3 else
+                "soil" if tile_id == 4 else
+                "rock" if tile_id == 5 else
+                "grass"
+                )
+                tile = Tile(x, y, tile_type, self.cell_size, self.hidden_mud)
+                tile_row.append(tile)
+            self.map.append(tile_row)
