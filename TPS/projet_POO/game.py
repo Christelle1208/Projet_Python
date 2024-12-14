@@ -157,3 +157,52 @@ class Game:
             self.screen.blit(rendered_text, (x_cooldowns_pos, y_cooldowns_pos))
             x_cooldowns_pos += 120 
             
+    def update(self):
+        """maj visuel du jeu."""
+        for row in self.map:
+            for tile in row:
+                tile.draw(self.screen)
+
+        if self.selected_unit:
+            for dx in range(-self.selected_unit.range - 1, self.selected_unit.range + 2):
+                for dy in range(-self.selected_unit.range - 1, self.selected_unit.range + 2):
+                    x, y = self.selected_unit.x + dx, self.selected_unit.y + dy
+                    if self.can_move_to(self.selected_unit, x, y):
+                        target_tile = self.map[y][x]
+                        if target_tile.tile_type == "water" and self.selected_unit.name == "Mage": 
+                            color = (0, 255, 255, 100) 
+                        elif target_tile.tile_type == "mud" and not target_tile.is_hidden: 
+                            color = (128, 164, 132, 100)  
+                        else:
+                            color = (40, 200, 40, 100) 
+
+                        move_surface = pygame.Surface((self.cell_size, self.cell_size), pygame.SRCALPHA) #transparence
+                        move_surface.fill(color)
+                        self.screen.blit(move_surface, (x * self.cell_size, y * self.cell_size))
+
+        for (x, y, equipment) in self.equipment_positions:
+            if any(abs(unit.x - x) + abs(unit.y - y) <= unit.range for unit in self.units if unit.team == self.current_turn):
+                self.screen.blit(
+                equipment.image,
+                (x * self.cell_size , y * self.cell_size)
+                )
+        
+
+    
+        for unit in self.units:
+            unit.draw(self.screen, self.current_turn)
+    
+        for x, y, color in self.affected_tiles:
+            affected_surface = pygame.Surface((self.cell_size, self.cell_size), pygame.SRCALPHA)
+            affected_surface.fill(color) 
+            self.screen.blit(affected_surface, (x * self.cell_size, y * self.cell_size))
+
+        self.cursor_alpha += 2 * self.cursor_alpha_direction
+        if self.cursor_alpha >= 100 or self.cursor_alpha <= 0:
+            self.cursor_alpha_direction *= -1 
+
+        cursor_surface = pygame.Surface((self.cell_size, self.cell_size), pygame.SRCALPHA)
+        cursor_surface.fill((255, 255, 255, self.cursor_alpha))
+        self.screen.blit(cursor_surface, (self.cursor_pos[0] * self.cell_size, self.cursor_pos[1] * self.cell_size))
+
+        self.draw_abilities()
