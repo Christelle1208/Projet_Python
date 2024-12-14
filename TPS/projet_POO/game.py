@@ -226,3 +226,18 @@ class Game:
         self.screen.blit(cursor_surface, (self.cursor_pos[0] * self.cell_size, self.cursor_pos[1] * self.cell_size))
 
         self.draw_abilities()
+
+        
+    def check_game_over(self):
+        team1_units = [unit for unit in self.units if unit.team == "player1"]
+        team2_units = [unit for unit in self.units if unit.team == "player2"]
+
+        if not team1_units:  
+            print_f("FIN DU JEU! le joueur 2 a gagné!")
+            self.display_game_over("le joueur 2 a gagné!")
+            return True
+        elif not team2_units:  
+            print_f("FIN DU JEU! le joueur 1 a gagné!")
+            self.display_game_over("le joueur 1 a gagné!")
+            return True
+        return False
