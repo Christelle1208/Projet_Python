@@ -5,7 +5,7 @@ from characters import *
 from abilities import Bomb, Sniper, Smoke, Heal 
 from config import *
 import random
-from equipement import AttackBoost, DefenseBoost, EvasionBoost
+from equipements import AttackBoost, DefenseBoost, EvasionBoost
 from print_f import *
 from positions import random_position, PLAYER1_ROW, PLAYER1_COLUMN, PLAYER2_ROW, PLAYER2_COLUMN
 from menu import *
