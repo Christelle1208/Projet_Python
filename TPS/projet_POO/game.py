@@ -244,7 +244,7 @@ class Game:
 
     def spawn_equipment(self):
 
-        self.equipment_positions = []  #
+        self.equipment_positions = []  
         occupied_positions = {(unit.x, unit.y) for unit in self.units}  
         
         left_positions = [
@@ -279,7 +279,7 @@ class Game:
 
 
     def check_equipment_pickup(self):
-        """vérifie si un charactère a récupérer un équipement."""
+        """vérifie si un charactère a récupéré un équipement."""
         for (x, y, equipment) in self.equipment_positions[:]:
             for unit in self.units:
                 if (unit.x, unit.y) == (x, y):
