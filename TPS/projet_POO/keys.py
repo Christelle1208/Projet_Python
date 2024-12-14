@@ -1,3 +1,5 @@
+import pygame
+
 def handle_key(self, key):
 
         self.clear_affected_tiles()
