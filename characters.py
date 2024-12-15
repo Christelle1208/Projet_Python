@@ -2,6 +2,7 @@ from unit import *
 from print_f import *
 
 class Tank(Unit):
+    """classe Tank."""
     def __init__(self, name, image_path):
         super().__init__(name, hp=100, attack=20, defense=10, range=1, evasion=0.1, image_path=image_path)
 
@@ -11,6 +12,7 @@ class Tank(Unit):
 
 
 class Assassin(Unit):
+    """classe Assassin."""
     def __init__(self, name, image_path):
         super().__init__(name, hp=70, attack=40, defense=5, range=2, evasion=0.35, image_path=image_path)
 
@@ -20,6 +22,7 @@ class Assassin(Unit):
 
 
 class archer(Unit):
+    """classe Archer."""
     def __init__(self, name, image_path):
         super().__init__(name, hp=75, attack=35, defense=6, range=3, evasion=0.2, image_path=image_path)
 
@@ -29,6 +32,7 @@ class archer(Unit):
 
 
 class Mage(Unit):
+    """classe Mage."""
     def __init__(self, name, image_path):
         super().__init__(name, hp=65, attack=35, defense=3, range=2, evasion=0.25, image_path=image_path)
 

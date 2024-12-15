@@ -7,6 +7,7 @@ from positions import *
 from menu import *
 
 def main():
+    """fonction principale qui gère la map et lance le jeu."""
     map_choice = main_menu()
     if map_choice == 1:
         map_path = MAP1

@@ -1,7 +1,17 @@
 import pygame
 from config import *
+
 class Tile:
+    """Classe pour les tiles. avec comme attributs toutes les images des tiles."""
     def __init__(self, x, y, tile_type, cell_size, hidden_mud):
+        """Initialisation de la tile.
+        Args:
+            x (int): la position x de la tile.
+            y (int): la position y de la tile.
+            tile_type (str): le type de la tile.
+            cell_size (int): la taille de la tile.
+            hidden_mud (list): la liste des tiles boue cachées.
+        """
         self.x = x
         self.y = y
         self.tile_type = tile_type

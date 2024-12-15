@@ -5,7 +5,34 @@ from print_f import *
 from collections import deque
 
 class Unit:
+    """Classe de base pour les unités.
+    Attributes:
+        name (str): nom de l'unité.
+        max_hp (int): points de vie maximum.
+        hp (int): points de vie actuels.
+        attack (int): force d'attaque.
+        defense (int): force de défense.
+        range (int): portée d'attaque.
+        evasion (float): taux d'évasion.
+        image_path (str): chemin de l'image de l'unité.
+        x (int): position x sur la carte.
+        y (int): position y sur la carte.
+        team (str): équipe de l'unité.
+        image (pygame.Surface): image de l'unité.
+        is_visible (bool): si l'unité est visible.
+        game (Game): instance de la classe Game.
+    """
     def __init__(self, name, hp, attack, defense, range, evasion, image_path):
+        """Initialisation de l'unité.
+        Args:
+            name (str): nom de l'unité.
+            hp (int): points de vie maximum.
+            attack (int): force d'attaque.
+            defense (int): force de défense.
+            range (int): portée d'attaque.
+            evasion (float): taux d'évasion.
+            image_path (str): chemin de l'image de l'unité.
+        """
         self.name = name
         self.max_hp = hp
         self.hp = hp
@@ -116,6 +143,7 @@ class Unit:
         return False
 
     def attack_enemy(self, target):
+        """Attaque l'unité cible."""
         attack = self.attack
         if self.game.map[self.y][self.x].tile_type == "mud":
             attack *= 0.9

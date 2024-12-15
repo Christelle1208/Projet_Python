@@ -1,6 +1,18 @@
 class Bouton():
-	
+	"""Classe permettant de créer un bouton"""
+
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+		"""
+		Initialisation de la classe Bouton.
+		Args:
+			image (pygame.Surface): L'image du bouton.
+			pos (tuple): La position (x, y) du bouton.
+			text_input (str): Le texte affiché sur le bouton.
+			font (pygame.font.Font): La police utilisée pour le texte.
+			base_color (tuple): La couleur de base du texte.
+			hovering_color (tuple): La couleur du texte lorsque la souris survole le bouton.
+		"""
+
 		self.image = image
 		self.x_pos = pos[0]
 		self.y_pos = pos[1]

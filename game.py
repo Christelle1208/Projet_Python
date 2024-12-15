@@ -11,8 +11,29 @@ from positions import random_position, PLAYER1_ROW, PLAYER1_COLUMN, PLAYER2_ROW,
 from menu import *
 
 class Game:
+    """classe Game.
+    Attributes:
+        screen (pygame.Surface): la surface du jeu.
+        hidden_mud (set): les boues cachées.
+        map (list): la map du jeu.
+        cell_size (int): la taille de la cellule.
+        current_turn (str): le tour actuel.
+        units (list): les unités.
+        current_unit_index (int): l'index de l'unité actuelle.
+        cursor_pos (tuple): la position du curseur.
+        ability_mode (Ability): l'habilité actuelle.
+        affected_tiles (list): les tiles affectées.
+        player1_cooldowns (dict): les temps d'attente du joueur 1.
+        player2_cooldowns (dict): les temps d'attente du joueur 2.
+        cursor_alpha (int): l'alpha du curseur.
+        cursor_alpha_direction (int): la direction de l'alpha du curseur.
+        """
     def __init__(self, screen, map_choice):
-        
+        """initialisation du jeu.
+        Args:
+            screen (pygame.Surface): la surface du jeu.
+            map_choice (int): le choix de la map.
+        """
         self.screen = screen
         self.hidden_mud = set()
         self.map = []
@@ -135,7 +156,7 @@ class Game:
             
     
     def handle_key(self, key):
-
+        """gestion des touches."""
         self.clear_affected_tiles()
         
         cooldowns = self.player1_cooldowns if self.current_turn == "player1" else self.player2_cooldowns
@@ -242,6 +263,7 @@ class Game:
 
 
     def draw_abilities(self):
+        """affiche les habilités."""
         font = pygame.font.Font(None, 24)
         
         cooldowns = self.player1_cooldowns if self.current_turn == "player1" else self.player2_cooldowns
@@ -266,6 +288,7 @@ class Game:
             
 
     def expire_smoke(self):
+        """expire la fumée."""
         for row in self.map:
             for tile in row:
                 if tile.is_smoke_covered:
@@ -332,6 +355,7 @@ class Game:
         self.draw_abilities()
             
     def check_game_over(self):
+        """vérifie si le jeu est terminé."""
         team1_units = [unit for unit in self.units if unit.team == "player1"]
         team2_units = [unit for unit in self.units if unit.team == "player2"]
 
@@ -346,7 +370,7 @@ class Game:
         return False
     
     def spawn_equipment(self):
-
+        """spawn des équipements sur la map."""
         self.equipment_positions = []  #
         occupied_positions = {(unit.x, unit.y) for unit in self.units}  
         

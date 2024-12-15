@@ -2,12 +2,23 @@ import pygame
 from print_f import *
 
 class Ability:
-    """classe habilité."""
+    """classe habilité.
+    Attributes:
+        name (str): nom de l'habilité.
+        """
     def __init__(self, name):
+        """initialisation de l'habilité.
+        Parameters:
+            name (str): nom de l'habilité.
+        """
         self.name = name
 
     def activate(self, game, user, target_pos):
-        """activation de l'habilité."""
+        """activation de l'habilité.
+        Parameters:
+            game (Game): instance de la classe Game.
+            user (Unit): instance de la classe Unit.
+            target_pos (tuple): position de la cible."""
         pass
 
 
