@@ -1,41 +1,97 @@
-from unit import *
-from print_f import *
+from unit import Unit
+from print_f import print_f
 
+# ========================================
+# Classe Tank
+# ========================================
 class Tank(Unit):
-    """classe Tank."""
-    def __init__(self, name, image_path):
-        super().__init__(name, hp=100, attack=20, defense=10, range=1, evasion=0.1, image_path=image_path)
+    """Classe représentant une unité Tank."""
 
-    def attack_enemy(self, target):
+    def __init__(self, name: str, image_path: str):
+        """Initialisation du Tank avec des caractéristiques spécifiques."""
+        super().__init__(
+            name=name, 
+            hp=100, 
+            attack=20, 
+            defense=10, 
+            range=1, 
+            evasion=0.1, 
+            image_path=image_path
+        )
+
+    def attack_enemy(self, target: Unit):
+        """Attaque une cible."""
         print_f(f"{self.name} lance une attaque sur le personnage {target.name}.")
         super().attack_enemy(target)
 
 
+# ========================================
+# Classe Assassin
+# ========================================
 class Assassin(Unit):
-    """classe Assassin."""
-    def __init__(self, name, image_path):
-        super().__init__(name, hp=70, attack=40, defense=5, range=2, evasion=0.35, image_path=image_path)
+    """Classe représentant une unité Assassin."""
 
-    def attack_enemy(self, target):
+    def __init__(self, name: str, image_path: str):
+        """Initialisation de l'Assassin avec des caractéristiques spécifiques."""
+        super().__init__(
+            name=name, 
+            hp=70, 
+            attack=40, 
+            defense=5, 
+            range=2, 
+            evasion=0.35, 
+            image_path=image_path
+        )
+
+    def attack_enemy(self, target: Unit):
+        """Attaque une cible."""
         print_f(f"{self.name} tente un homicide sur le personnage {target.name}.")
         super().attack_enemy(target)
 
 
-class archer(Unit):
-    """classe Archer."""
-    def __init__(self, name, image_path):
-        super().__init__(name, hp=75, attack=35, defense=6, range=3, evasion=0.2, image_path=image_path)
+# ========================================
+# Classe Archer
+# ========================================
+class Archer(Unit):
+    """Classe représentant une unité Archer."""
 
-    def attack_enemy(self, target):
-        print_f(f"{self.name} lance ses fléchettes sur {target.name}.")
+    def __init__(self, name: str, image_path: str):
+        """Initialisation de l'Archer avec des caractéristiques spécifiques."""
+        super().__init__(
+            name=name, 
+            hp=75, 
+            attack=35, 
+            defense=6, 
+            range=3, 
+            evasion=0.2, 
+            image_path=image_path
+        )
+
+    def attack_enemy(self, target: Unit):
+        """Attaque une cible."""
+        print_f(f"{self.name} lance ses flèches sur le personnage {target.name}.")
         super().attack_enemy(target)
 
 
+# ========================================
+# Classe Mage
+# ========================================
 class Mage(Unit):
-    """classe Mage."""
-    def __init__(self, name, image_path):
-        super().__init__(name, hp=65, attack=35, defense=3, range=2, evasion=0.25, image_path=image_path)
+    """Classe représentant une unité Mage."""
 
-    def attack_enemy(self, target):
-        print_f(f"{self.name} jette un sort sur {target.name}.")
+    def __init__(self, name: str, image_path: str):
+        """Initialisation du Mage avec des caractéristiques spécifiques."""
+        super().__init__(
+            name=name, 
+            hp=65, 
+            attack=35, 
+            defense=3, 
+            range=2, 
+            evasion=0.25, 
+            image_path=image_path
+        )
+
+    def attack_enemy(self, target: Unit):
+        """Attaque une cible en lançant un sort."""
+        print_f(f"{self.name} jette un sort sur le personnage {target.name}.")
         target.take_damage(self.attack, ignore_defense=True)
