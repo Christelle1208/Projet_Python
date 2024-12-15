@@ -74,4 +74,4 @@ class EvasionBoost(Equipment):
     def apply(self, unit):
         """Appliquer l'effet d'augmentation du taux d'évasion."""
         unit.evasion += self.evasion_rate
-        print_f(f"{unit.name} voit son taux d'évasion augmenter de {self.evasion_rate * 100:.2f}%!")
+        print_f(f"{unit.name} voit son taux d'évasion augmenter de {self.evasion_rate * 100}%!")
