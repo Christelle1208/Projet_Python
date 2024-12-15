@@ -11,7 +11,8 @@ from positions import random_position, PLAYER1_ROW, PLAYER1_COLUMN, PLAYER2_ROW,
 from menu import *
 
 class Game:
-    """classe Game.
+    """classe Game
+    
     Attributes:
         screen (pygame.Surface): la surface du jeu.
         hidden_mud (set): les boues cachées.
@@ -28,6 +29,7 @@ class Game:
         cursor_alpha (int): l'alpha du curseur.
         cursor_alpha_direction (int): la direction de l'alpha du curseur.
         """
+
     def __init__(self, screen, map_choice):
         """initialisation du jeu.
         Args:
