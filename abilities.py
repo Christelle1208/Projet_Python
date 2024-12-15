@@ -5,7 +5,7 @@ from print_f import *
 # Classe Parent: Ability
 # ========================================
 class Ability:
-    """Classe pour représenter une habilité générique.
+    """Classe pour représenter une habilité.
 
     Attributs:
         name (str): Nom de l'habilité.
