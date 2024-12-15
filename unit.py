@@ -1,74 +1,67 @@
 import pygame
-from config import CELL_SIZE
 import random
-from print_f import *
+from config import CELL_SIZE
+from print_f import print_f
 from collections import deque
 
+
 class Unit:
-    """Classe de base pour les unités.
+    """Classe de base pour représenter une unité.
+
     Attributes:
-        name (str): nom de l'unité.
-        max_hp (int): points de vie maximum.
-        hp (int): points de vie actuels.
-        attack (int): force d'attaque.
-        defense (int): force de défense.
-        range (int): portée d'attaque.
-        evasion (float): taux d'évasion.
-        image_path (str): chemin de l'image de l'unité.
-        x (int): position x sur la carte.
-        y (int): position y sur la carte.
-        team (str): équipe de l'unité.
-        image (pygame.Surface): image de l'unité.
-        is_visible (bool): si l'unité est visible.
-        game (Game): instance de la classe Game.
+        name (str): Nom de l'unité.
+        max_hp (int): Points de vie maximum.
+        hp (int): Points de vie actuels.
+        attack (int): Force d'attaque.
+        defense (int): Force de défense.
+        range (int): Portée d'attaque.
+        evasion (float): Taux d'évasion.
+        image_path (str): Chemin de l'image de l'unité.
+        x (int): Position x sur la carte.
+        y (int): Position y sur la carte.
+        team (str): Équipe de l'unité.
+        image (pygame.Surface): Image de l'unité.
+        is_visible (bool): Visibilité de l'unité.
+        game (Game): Instance de la classe Game associée.
     """
-    def __init__(self, name, hp, attack, defense, range, evasion, image_path):
-        """Initialisation de l'unité.
-        Args:
-            name (str): nom de l'unité.
-            hp (int): points de vie maximum.
-            attack (int): force d'attaque.
-            defense (int): force de défense.
-            range (int): portée d'attaque.
-            evasion (float): taux d'évasion.
-            image_path (str): chemin de l'image de l'unité.
-        """
+
+    def __init__(self, name: str, hp: int, attack: int, defense: int, range: int, evasion: float, image_path: str):
+        """Initialisation de l'unité."""
         self.name = name
         self.max_hp = hp
         self.hp = hp
         self.attack = attack
         self.defense = defense
         self.range = range
-        self.has_acted = False
         self.evasion = evasion
+        self.has_acted = False
         self.x = 0
         self.y = 0
         self.team = None
-        self.image = pygame.image.load(image_path)
-        self.image = pygame.transform.scale(self.image, (CELL_SIZE, CELL_SIZE))  
+        self.image = pygame.transform.scale(pygame.image.load(image_path), (CELL_SIZE, CELL_SIZE))
         self.is_visible = True
         self.game = None
 
     def set_game(self, game):
-        """Association de cette unité à une instance de jeu."""
+        """Associe cette unité à une instance de jeu."""
         self.game = game
 
     def draw(self, screen, current_turn):
-        """Dessinez l'unité et sa barre HP si elle est visible."""
+        """Dessine l'unité et sa barre de vie si elle est visible."""
         if not self.is_visible and self.team != current_turn:
-            return 
+            return
 
-        # dessin de l'image du personnage
+        # Dessin de l'image de l'unité
         screen.blit(self.image, (self.x * CELL_SIZE, self.y * CELL_SIZE))
 
+        # Détermine la couleur des contours
+        border_color = None
         if self.team == current_turn:
-            border_color = (0, 0, 255)  # bleu pour les unités alliées
+            border_color = (0, 0, 255)  # Bleu pour les unités alliées
         elif self.is_visible:
-            border_color = (255, 0, 0)  # rouge pour l'ennemi
-        else:
-            border_color = None
+            border_color = (255, 0, 0)  # Rouge pour les ennemis
 
-        # dessine les contours des personnages
+        # Dessin des contours si nécessaire
         if border_color:
             pygame.draw.rect(
                 screen,
@@ -77,47 +70,48 @@ class Unit:
                 3
             )
 
-        # barre de vie
+        # Barre de vie
         bar_width = 5
         bar_height = CELL_SIZE
         bar_x = self.x * CELL_SIZE + CELL_SIZE
         bar_y = self.y * CELL_SIZE + (CELL_SIZE - bar_height) // 2
 
-        # calcul de la barre proportionnelle pour les PV
+        # Calcul de la hauteur de la barre de vie
         hp_ratio = max(0, self.hp / self.max_hp)
         hp_fill_height = int(bar_height * hp_ratio)
 
-        # dessin de la barre de vie
-        pygame.draw.rect(screen, (255, 0, 0), (bar_x - 5, bar_y, bar_width, bar_height))  
-        pygame.draw.rect(screen, (0, 255, 0), (bar_x - 5, bar_y + bar_height - hp_fill_height, bar_width, hp_fill_height)) 
+        # Dessin de la barre de vie
+        pygame.draw.rect(screen, (255, 0, 0), (bar_x - 5, bar_y, bar_width, bar_height))  # Fond rouge
+        pygame.draw.rect(screen, (0, 255, 0), (bar_x - 5, bar_y + bar_height - hp_fill_height, bar_width, hp_fill_height))  # Remplissage vert
 
-    def take_damage(self, amount, ignore_defense=False):
-        """Calcule et applique les dégâts avec gestion de l'évasion."""
+    def take_damage(self, amount: int, ignore_defense=False):
+        """Applique des dégâts à l'unité avec gestion de l'évasion."""
         evasion = self.evasion
         if self.game.map[self.y][self.x].tile_type == "mud":
             evasion -= 0.1
-        if random.random() < evasion:  # vérification de l'évasion
+
+        if random.random() < evasion:  # Évasion réussie
             if self.is_visible:
                 print_f(f"{self.name} a esquivé l'attaque !")
             return
 
-        # dégâts si l'évasion échoue
+        # Calcul des dégâts
         damage_taken = amount if ignore_defense else max(0, amount - self.defense)
         self.hp -= damage_taken
 
         if self.is_visible:
-            print_f(f"{self.name} prend {amount} dégâts ! PV restant: {self.hp}")
+            print_f(f"{self.name} prend {damage_taken} dégâts ! PV restant: {self.hp}")
 
-    def can_move_to(self, x, y, map):
-        """Vérifie si la position cible (x, y) est dans la portée de mouvement de l'unité."""
+    def can_move_to(self, x: int, y: int, map):
+        """Vérifie si l'unité peut se déplacer à la position (x, y)."""
         if not (0 <= x < len(map[0]) and 0 <= y < len(map)):
             return False
 
         obstacles = {"rock", "wall", "water"}
-        if self.name == "Mage":
+        if self.name == "Mage":  # Le Mage peut traverser l'eau
             obstacles.remove("water")
 
-        
+        # Parcours en largeur pour trouver un chemin
         queue = deque([(self.x, self.y, 0)])
         visited = set()
         visited.add((self.x, self.y))
@@ -132,8 +126,8 @@ class Unit:
             for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 next_x, next_y = current_x + dx, current_y + dy
 
-                if (1 <= next_x < len(map[0]) - 1 and
-                    1 <= next_y < len(map) - 1 and
+                if (0 <= next_x < len(map[0]) and
+                    0 <= next_y < len(map) and
                     (next_x, next_y) not in visited):
                     tile = map[next_y][next_x]
                     if tile.tile_type not in obstacles:
@@ -143,10 +137,9 @@ class Unit:
         return False
 
     def attack_enemy(self, target):
-        """Attaque l'unité cible."""
+        """Attaque une unité ennemie."""
         attack = self.attack
         if self.game.map[self.y][self.x].tile_type == "mud":
-            attack *= 0.9
+            attack *= 0.9  # Réduction des dégâts sur la boue
         print_f(f"{self.name} attaque {target.name} avec des dégâts de {attack}.")
         target.take_damage(attack)
-
