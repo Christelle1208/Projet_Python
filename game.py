@@ -22,9 +22,9 @@ class Game:
         current_unit_index (int): l'index de l'unité actuelle.
         cursor_pos (tuple): la position du curseur.
         ability_mode (Ability): l'habilité actuelle.
-        affected_tiles (list): les tiles affectées.
-        player1_cooldowns (dict): les temps d'attente du joueur 1.
-        player2_cooldowns (dict): les temps d'attente du joueur 2.
+        affected_tiles (list): les tiles affectées par l'habilité.
+        player1_cooldowns (dict): temps d'attente d'utilisation des habilités du joueur 1.
+        player2_cooldowns (dict):  temps d'attente d'utilisation des habilités du joueur 2.
         cursor_alpha (int): l'alpha du curseur.
         cursor_alpha_direction (int): la direction de l'alpha du curseur.
         """
