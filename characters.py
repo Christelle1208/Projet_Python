@@ -8,16 +8,7 @@ class Tank(Unit):
     """Classe représentant une unité Tank."""
 
     def __init__(self, name: str, image_path: str):
-        """Initialisation du Tank avec des caractéristiques spécifiques."""
-        super().__init__(
-            name=name, 
-            hp=100, 
-            attack=20, 
-            defense=10, 
-            range=1, 
-            evasion=0.1, 
-            image_path=image_path
-        )
+        super().__init__(name, hp=100, attack=20, defense=10, range=1, evasion=0.1, image_path=image_path)
 
     def attack_enemy(self, target: Unit):
         """Attaque une cible."""
@@ -32,16 +23,7 @@ class Assassin(Unit):
     """Classe représentant une unité Assassin."""
 
     def __init__(self, name: str, image_path: str):
-        """Initialisation de l'Assassin avec des caractéristiques spécifiques."""
-        super().__init__(
-            name=name, 
-            hp=70, 
-            attack=40, 
-            defense=5, 
-            range=2, 
-            evasion=0.35, 
-            image_path=image_path
-        )
+        super().__init__(name, hp=70, attack=40, defense=5, range=2, evasion=0.35, image_path=image_path)
 
     def attack_enemy(self, target: Unit):
         """Attaque une cible."""
@@ -56,16 +38,7 @@ class Archer(Unit):
     """Classe représentant une unité Archer."""
 
     def __init__(self, name: str, image_path: str):
-        """Initialisation de l'Archer avec des caractéristiques spécifiques."""
-        super().__init__(
-            name=name, 
-            hp=75, 
-            attack=35, 
-            defense=6, 
-            range=3, 
-            evasion=0.2, 
-            image_path=image_path
-        )
+        super().__init__(name, hp=75, attack=35, defense=6, range=3, evasion=0.2, image_path=image_path)
 
     def attack_enemy(self, target: Unit):
         """Attaque une cible."""
@@ -80,16 +53,7 @@ class Mage(Unit):
     """Classe représentant une unité Mage."""
 
     def __init__(self, name: str, image_path: str):
-        """Initialisation du Mage avec des caractéristiques spécifiques."""
-        super().__init__(
-            name=name, 
-            hp=65, 
-            attack=35, 
-            defense=3, 
-            range=2, 
-            evasion=0.25, 
-            image_path=image_path
-        )
+        super().__init__(name, hp=65, attack=35, defense=3, range=2, evasion=0.25, image_path=image_path)
 
     def attack_enemy(self, target: Unit):
         """Attaque une cible en lançant un sort."""
